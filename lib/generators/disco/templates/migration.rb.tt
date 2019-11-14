@@ -1,0 +1,11 @@
+class <%= migration_class_name %> < ActiveRecord::Migration<%= migration_version %>
+  def change
+    create_table :disco_recommendations do |t|
+      t.references :subject, polymorphic: true
+      t.references :item, polymorphic: true
+      t.string :context
+      t.float :score
+      t.timestamps
+    end
+  end
+end
