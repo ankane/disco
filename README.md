@@ -236,13 +236,18 @@ There are a number of ways to deal with this, but here are some common ones:
 - For user-based recommendations, show new users the most popular items.
 - For item-based recommendations, make content-based recommendations with a gem like [tf-idf-similarity](https://github.com/jpmckinney/tf-idf-similarity).
 
-## Daru
+## Data
 
-Disco works with Daru data frames
+Data can be an array of hashes
 
 ```ruby
-data = Daru::DataFrame.from_csv("ratings.csv")
-recommender.fit(data)
+[{user_id: 1, item_id: 1, rating: 5}, {user_id: 2, item_id: 1, rating: 3}]
+```
+
+Or a Daru data frame
+
+```ruby
+Daru::DataFrame.from_csv("ratings.csv")
 ```
 
 ## Reference
