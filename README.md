@@ -4,7 +4,7 @@
 
 - Supports user-based and item-based recommendations
 - Works with explicit and implicit feedback
-- Uses matrix factorization
+- Uses high-performance matrix factorization
 
 [![Build Status](https://travis-ci.org/ankane/disco.svg?branch=master)](https://travis-ci.org/ankane/disco)
 
@@ -202,7 +202,7 @@ recommender = Marshal.load(bin)
 
 ## Algorithms
 
-Disco uses matrix factorization.
+Disco uses high-performance matrix factorization.
 
 - For explicit feedback, it uses [stochastic gradient descent](https://www.csie.ntu.edu.tw/~cjlin/papers/libmf/libmf_journal.pdf)
 - For implicit feedback, it uses [coordinate descent](https://www.csie.ntu.edu.tw/~cjlin/papers/one-class-mf/biased-mf-sdm-with-supp.pdf)
