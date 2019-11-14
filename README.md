@@ -266,6 +266,7 @@ Thanks to:
 
 - [LIBMF](https://github.com/cjlin1/libmf) for providing high performance matrix factorization
 - [Implicit](https://github.com/benfred/implicit/) for serving as an initial reference for user and item similarity
+- [@dasch](https://github.com/dasch) for the gem name
 
 ## History
 
