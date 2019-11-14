@@ -6,6 +6,8 @@
 - Works with explicit and implicit feedback
 - Uses matrix factorization
 
+[![Build Status](https://travis-ci.org/ankane/disco.svg?branch=master)](https://travis-ci.org/ankane/disco)
+
 ## Installation
 
 Add this line to your application’s Gemfile:
