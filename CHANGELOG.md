@@ -1,4 +1,4 @@
-## 0.1.1 (unreleased)
+## 0.1.1 (2019-11-14)
 
 - Fixed Rails integration
 
