@@ -21,6 +21,7 @@ class RecommenderTest < Minitest::Test
     assert_in_delta expected, recommender.global_mean
 
     recs = recommender.item_recs("Star Wars (1977)").map { |r| r[:item_id] }
+    assert_equal 5, recs.size
     assert_includes recs, "Empire Strikes Back, The (1980)"
     assert_includes recs, "Return of the Jedi (1983)"
   end
@@ -118,5 +119,20 @@ class RecommenderTest < Minitest::Test
 
     recommender = Disco::Recommender.new
     recommender.fit(data)
+  end
+
+  def test_optimize_similar_items
+    skip unless ENV["NGT"]
+
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+
+    recommender.optimize_similar_items
+
+    recs = recommender.item_recs("Star Wars (1977)").map { |r| r[:item_id] }
+    assert_equal 5, recs.size
+    assert_includes recs, "Empire Strikes Back, The (1980)"
+    assert_includes recs, "Return of the Jedi (1983)"
   end
 end

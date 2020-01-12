@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "daru"
+  spec.add_development_dependency "ngt"
 end
