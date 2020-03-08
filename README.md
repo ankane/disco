@@ -250,6 +250,30 @@ Or a Daru data frame
 Daru::DataFrame.from_csv("ratings.csv")
 ```
 
+## Faster Similarity [master, experimental]
+
+If you have a large number of users/items, you can use an approximate nearest neighbors library like [NGT](https://github.com/ankane/ngt) to speed up item-based recommendations and similar users.
+
+Add this line to your application’s Gemfile:
+
+```ruby
+gem 'ngt'
+```
+
+Speed up item-based recommendations with:
+
+```ruby
+model.optimize_item_recs
+```
+
+Speed up similar users with:
+
+```ruby
+model.optimize_similar_users
+```
+
+This should be called after fitting or loading the model.
+
 ## Reference
 
 Get the global mean

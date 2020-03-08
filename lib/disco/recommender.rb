@@ -73,6 +73,9 @@ module Disco
       # TODO read from LIBMF directly to Numo for performance
       @user_factors = Numo::DFloat.cast(model.p_factors)
       @item_factors = Numo::DFloat.cast(model.q_factors)
+
+      @user_index = nil
+      @item_index = nil
     end
 
     def user_recs(user_id, count: 5, item_ids: nil)
@@ -106,16 +109,35 @@ module Disco
       end
     end
 
+    def optimize_similar_items
+      @item_index = create_index(@item_factors)
+    end
+    alias_method :optimize_item_recs, :optimize_similar_items
+
+    def optimize_similar_users
+      @user_index = create_index(@user_factors)
+    end
+
     def similar_items(item_id, count: 5)
-      similar(item_id, @item_map, @item_factors, item_norms, count)
+      similar(item_id, @item_map, @item_factors, item_norms, count, @item_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
-      similar(user_id, @user_map, @user_factors, user_norms, count)
+      similar(user_id, @user_map, @user_factors, user_norms, count, @user_index)
     end
 
     private
+
+    def create_index(factors)
+      require "tmpdir"
+      require "ngt"
+
+      index = Ngt::Index.create(Dir.tmpdir, factors.shape[1], distance_type: "Cosine")
+      index.batch_insert(factors)
+      index.build_index
+      index
+    end
 
     def user_norms
       @user_norms ||= norms(@user_factors)
@@ -131,20 +153,37 @@ module Disco
       norms
     end
 
-    def similar(id, map, factors, norms, count)
+    def similar(id, map, factors, norms, count, index)
       i = map[id]
       if i
-        predictions = factors.dot(factors[i, true]) / norms
-
-        predictions =
-          map.keys.zip(predictions).map do |item_id, pred|
-            {item_id: item_id, score: pred}
+        if index && count
+          keys = map.keys
+          result = index.search(factors[i, true], size: count + 1)[1..-1]
+          result.map do |v|
+            {
+              # ids from batch_insert start at 1 instead of 0
+              item_id: keys[v[:id] - 1],
+              # convert cosine distance to cosine similarity
+              score: 1 - v[:distance]
+            }
           end
+        else
+          predictions = factors.dot(factors[i, true]) / norms
 
-        predictions.delete_at(i)
-        predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
-        predictions = predictions.first(count) if count
-        predictions
+          predictions =
+            map.keys.zip(predictions).map do |item_id, pred|
+              {item_id: item_id, score: pred}
+            end
+
+          max_score = predictions.delete_at(i)[:score]
+          predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
+          predictions = predictions.first(count) if count
+          # divide by max score to get cosine similarity
+          # only need to do for returned records
+          # could alternatively do cosine distance = 1 - cosine similarity
+          # predictions.each { |pred| pred[:score] /= max_score }
+          predictions
+        end
       else
         []
       end
