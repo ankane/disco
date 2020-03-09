@@ -134,7 +134,6 @@ module Disco
 
       index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
       index.batch_insert(factors)
-      index.build_index
       index
     end
 
