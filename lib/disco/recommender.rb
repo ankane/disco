@@ -130,10 +130,9 @@ module Disco
     private
 
     def create_index(factors)
-      require "tmpdir"
       require "ngt"
 
-      index = Ngt::Index.create(Dir.tmpdir, factors.shape[1], distance_type: "Cosine")
+      index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
       index.batch_insert(factors)
       index.build_index
       index

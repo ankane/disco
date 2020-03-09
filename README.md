@@ -257,7 +257,7 @@ If you have a large number of users/items, you can use an approximate nearest ne
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'ngt'
+gem 'ngt', '>= 0.2.3'
 ```
 
 Speed up item-based recommendations with:
