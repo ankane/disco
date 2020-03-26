@@ -70,9 +70,8 @@ module Disco
 
       @global_mean = model.bias
 
-      # TODO read from LIBMF directly to Numo for performance
-      @user_factors = Numo::DFloat.cast(model.p_factors)
-      @item_factors = Numo::DFloat.cast(model.q_factors)
+      @user_factors = model.p_factors(format: :numo)
+      @item_factors = model.q_factors(format: :numo)
 
       @user_index = nil
       @item_index = nil
