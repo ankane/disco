@@ -1,4 +1,4 @@
-## 0.1.2 (unreleased)
+## 0.1.2 (2020-03-26)
 
 - Added experimental `optimize_item_recs` and `optimize_similar_users` methods
 
