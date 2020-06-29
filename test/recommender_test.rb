@@ -93,6 +93,22 @@ class RecommenderTest < Minitest::Test
     assert_equal "No training data", error.message
   end
 
+  def test_missing_user_id
+    recommender = Disco::Recommender.new
+    error = assert_raises ArgumentError do
+      recommender.fit([{item_id: 1, rating: 5}])
+    end
+    assert_equal "Missing user_id", error.message
+  end
+
+  def test_missing_item_id
+    recommender = Disco::Recommender.new
+    error = assert_raises ArgumentError do
+      recommender.fit([{user_id: 1, rating: 5}])
+    end
+    assert_equal "Missing item_id", error.message
+  end
+
   def test_multiple_user_item
     skip # no error for now
 
