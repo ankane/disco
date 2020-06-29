@@ -107,22 +107,42 @@ class RecommenderTest < Minitest::Test
     assert_equal "Multiple observations for user 1, item 2", error.message
   end
 
+  def test_rover
+    movielens = Disco.load_movielens
+
+    data =
+      Rover::DataFrame.new({
+        "user_id" => movielens.map { |v| v[:user_id] },
+        "item_id" => movielens.map { |v| v[:item_id] },
+        "rating" => movielens.map { |v| v[:rating] }
+      })
+
+    recommender = Disco::Recommender.new
+    recommender.fit(data)
+
+    # original data frame not modified
+    assert_equal ["user_id", "item_id", "rating"], data.keys
+  end
+
   def test_daru
     movielens = Disco.load_movielens
 
     data =
-      Daru::DataFrame.new(
-        user_id: movielens.map { |v| v[:user_id] },
-        item_id: movielens.map { |v| v[:item_id] },
-        rating: movielens.map { |v| v[:rating] }
-      )
+      Daru::DataFrame.new({
+        "user_id" => movielens.map { |v| v[:user_id] },
+        "item_id" => movielens.map { |v| v[:item_id] },
+        "rating" => movielens.map { |v| v[:rating] }
+      })
 
     recommender = Disco::Recommender.new
     recommender.fit(data)
+
+    # original data frame not modified
+    assert_equal ["user_id", "item_id", "rating"], data.vectors.to_a
   end
 
   def test_optimize_similar_items
-    skip if Gem.win_platform?
+    skip "NGT not available on Windows" if Gem.win_platform?
 
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)

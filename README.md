@@ -244,6 +244,12 @@ Data can be an array of hashes
 [{user_id: 1, item_id: 1, rating: 5}, {user_id: 2, item_id: 1, rating: 3}]
 ```
 
+Or a Rover data frame
+
+```ruby
+Rover.read_csv("ratings.csv")
+```
+
 Or a Daru data frame
 
 ```ruby

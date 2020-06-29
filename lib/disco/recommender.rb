@@ -9,14 +9,8 @@ module Disco
     end
 
     def fit(train_set, validation_set: nil)
-      if defined?(Daru)
-        if train_set.is_a?(Daru::DataFrame)
-          train_set = train_set.to_a[0]
-        end
-        if validation_set.is_a?(Daru::DataFrame)
-          validation_set = validation_set.to_a[0]
-        end
-      end
+      train_set = to_dataset(train_set)
+      validation_set = to_dataset(validation_set) if validation_set
 
       @implicit = !train_set.any? { |v| v[:rating] }
 
@@ -190,6 +184,9 @@ module Disco
       user_ids = train_set.map { |v| v[:user_id] }.uniq.sort
       item_ids = train_set.map { |v| v[:item_id] }.uniq.sort
 
+      raise ArgumentError, "Missing user_id" if user_ids.any?(&:nil?)
+      raise ArgumentError, "Missing item_id" if item_ids.any?(&:nil?)
+
       @user_map = user_ids.zip(user_ids.size.times).to_h
       @item_map = item_ids.zip(item_ids.size.times).to_h
     end
@@ -205,6 +202,25 @@ module Disco
 
     def check_training_set(train_set)
       raise ArgumentError, "No training data" if train_set.empty?
+    end
+
+    def to_dataset(dataset)
+      if defined?(Rover::DataFrame) && dataset.is_a?(Rover::DataFrame)
+        # convert keys to symbols
+        dataset = dataset.dup
+        dataset.keys.each do |k, v|
+          dataset[k.to_sym] ||= dataset.delete(k)
+        end
+        dataset.to_a
+      elsif defined?(Daru::DataFrame) && dataset.is_a?(Daru::DataFrame)
+        # convert keys to symbols
+        dataset = dataset.dup
+        new_names = dataset.vectors.to_a.map { |k| [k, k.to_sym] }.to_h
+        dataset.rename_vectors!(new_names)
+        dataset.to_a[0]
+      else
+        dataset
+      end
     end
 
     def marshal_dump
