@@ -1,4 +1,4 @@
-## 0.1.3 (unreleased)
+## 0.1.3 (2020-06-28)
 
 - Added support for Rover
 - Raise error when missing user or item ids
