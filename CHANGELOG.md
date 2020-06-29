@@ -3,6 +3,7 @@
 - Added support for Rover
 - Raise error when missing user or item ids
 - Fixed string keys for Daru data frames
+- `optimize_item_recs` and `optimize_similar_users` methods are no longer experimental
 
 ## 0.1.2 (2020-03-26)
 
