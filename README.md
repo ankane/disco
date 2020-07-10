@@ -108,7 +108,7 @@ data =
   views.map do |(user_id, post_id), count|
     {
       user_id: user_id,
-      post_id: post_id,
+      item_id: post_id,
       value: count
     }
   end
