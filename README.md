@@ -101,7 +101,7 @@ recommender.item_recs("Star Wars (1977)")
 ```ruby
 views = Ahoy::Event.
   where(name: "Viewed post").
-  group(:user_id, "properties->>'post_id'") # postgres syntax
+  group(:user_id, "properties->>'post_id'"). # postgres syntax
   count
 
 data =
