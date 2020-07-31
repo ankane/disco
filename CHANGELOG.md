@@ -1,3 +1,7 @@
+## 0.2.0 (unreleased)
+
+- Changed score to always be between -1 and 1 for `item_recs` and `similar_users` (cosine similarity)
+
 ## 0.1.3 (2020-06-28)
 
 - Added support for Rover

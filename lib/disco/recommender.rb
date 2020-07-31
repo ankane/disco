@@ -139,7 +139,7 @@ module Disco
     end
 
     def norms(factors)
-      norms = Numo::DFloat::Math.sqrt((factors * factors).sum(axis: 1))
+      norms = Numo::SFloat::Math.sqrt((factors * factors).sum(axis: 1))
       norms[norms.eq(0)] = 1e-10 # no zeros
       norms
     end
@@ -171,8 +171,7 @@ module Disco
           predictions = predictions.first(count) if count
           # divide by max score to get cosine similarity
           # only need to do for returned records
-          # could alternatively do cosine distance = 1 - cosine similarity
-          # predictions.each { |pred| pred[:score] /= max_score }
+          predictions.each { |pred| pred[:score] /= max_score }
           predictions
         end
       else
