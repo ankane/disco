@@ -36,8 +36,7 @@ module Disco
 
       return dest if File.exist?(dest)
 
-      temp_dir ||= File.dirname(Tempfile.new("disco"))
-      temp_path = "#{temp_dir}/#{Time.now.to_f}" # TODO better name
+      temp_path = "#{Dir.tmpdir}/disco-#{Time.now.to_f}" # TODO better name
 
       digest = Digest::SHA2.new
 
