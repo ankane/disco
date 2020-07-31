@@ -1,6 +1,6 @@
 ## 0.2.0 (unreleased)
 
-- Changed score to always be between -1 and 1 for `item_recs` and `similar_users` (cosine similarity)
+- Changed score to always be between -1 and 1 for `item_recs` and `similar_users` (cosine similarity - this makes it easier to understand and consistent with `optimize_item_recs` and `optimize_similar_users`)
 
 ## 0.1.3 (2020-06-28)
 
