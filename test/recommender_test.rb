@@ -20,10 +20,14 @@ class RecommenderTest < Minitest::Test
     expected = data.map { |v| v[:rating] }.sum / data.size.to_f
     assert_in_delta expected, recommender.global_mean
 
-    recs = recommender.item_recs("Star Wars (1977)").map { |r| r[:item_id] }
+    recs = recommender.item_recs("Star Wars (1977)")
     assert_equal 5, recs.size
-    assert_includes recs, "Empire Strikes Back, The (1980)"
-    assert_includes recs, "Return of the Jedi (1983)"
+
+    item_ids = recs.map { |r| r[:item_id] }
+    assert_includes item_ids, "Empire Strikes Back, The (1980)"
+    assert_includes item_ids, "Return of the Jedi (1983)"
+
+    assert_in_delta 0.9972, recs.first[:score]
   end
 
   def test_implicit
