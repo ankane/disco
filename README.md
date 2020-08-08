@@ -1,6 +1,6 @@
 # Disco
 
-:fire: Collaborative filtering for Ruby
+:fire: Recommendations for Ruby with collaborative filtering
 
 - Supports user-based and item-based recommendations
 - Works with explicit and implicit feedback
