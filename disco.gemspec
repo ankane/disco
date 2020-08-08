@@ -3,7 +3,7 @@ require_relative "lib/disco/version"
 Gem::Specification.new do |spec|
   spec.name          = "disco"
   spec.version       = Disco::VERSION
-  spec.summary       = "Recommendations for Ruby with collaborative filtering"
+  spec.summary       = "Recommendations for Ruby and Rails with collaborative filtering"
   spec.homepage      = "https://github.com/ankane/disco"
   spec.license       = "MIT"
 
