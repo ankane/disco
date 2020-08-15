@@ -1,5 +1,13 @@
 require_relative "test_helper"
 
+# NOTE: reshape object to test custom columns
+def reshape_training_set(data)
+  keys = [:userid, :movie_id, :stars]
+  data.map do |record|
+    Hash[keys.zip(record.values)]
+  end
+end
+
 class RecommenderTest < Minitest::Test
   def test_explicit
     data = Disco.load_movielens
@@ -30,6 +38,44 @@ class RecommenderTest < Minitest::Test
     assert_in_delta 0.9972, recs.first[:score]
   end
 
+  def test_explicit_custom_columns
+    data = Disco.load_movielens
+
+    train_set = reshape_training_set data
+
+    recommender = Disco::Recommender.new(
+      user_key: :userid,
+      item_key: :movie_id,
+      value_key: :stars,
+      implicit: false,
+      factors: 20
+    )
+    recommender.fit(train_set)
+
+    path = "#{Dir.mktmpdir}/recommender.bin"
+
+    dump = Marshal.dump(recommender)
+    File.binwrite(path, dump)
+
+    dump = File.binread(path)
+    recommender = Marshal.load(dump)
+
+    assert_equal [1664, 20], recommender.item_factors.shape
+    assert_equal [943, 20], recommender.user_factors.shape
+
+    expected = train_set.map { |v| v[:stars] }.sum / train_set.size.to_f
+    assert_in_delta expected, recommender.global_mean
+
+    recs = recommender.item_recs("Star Wars (1977)")
+    assert_equal 5, recs.size
+
+    item_ids = recs.map { |r| r[:movie_id] }
+    assert_includes item_ids, "Empire Strikes Back, The (1980)"
+    assert_includes item_ids, "Return of the Jedi (1983)"
+
+    assert_in_delta 0.9972, recs.first[:score]
+  end
+
   def test_implicit
     data = Disco.load_movielens
     data.each { |v| v.delete(:rating) }
@@ -50,6 +96,37 @@ class RecommenderTest < Minitest::Test
     assert recommender.global_mean
 
     recs = recommender.item_recs("Star Wars (1977)", count: 10).map { |r| r[:item_id] }
+    assert_includes recs, "Empire Strikes Back, The (1980)"
+    assert_includes recs, "Return of the Jedi (1983)"
+  end
+
+  def test_implicit_custom_columns
+    data = Disco.load_movielens
+
+    train_set = reshape_training_set data
+    train_set.each { |v| v.delete(:stars) }
+
+    recommender = Disco::Recommender.new(
+      user_key: :userid,
+      item_key: :movie_id,
+      implicit: true,
+      factors: 20
+    )
+    recommender.fit(train_set)
+
+    path = "#{Dir.mktmpdir}/recommender.bin"
+
+    dump = Marshal.dump(recommender)
+    File.binwrite(path, dump)
+
+    dump = File.binread(path)
+    recommender = Marshal.load(dump)
+
+    assert_equal [1664, 20], recommender.item_factors.shape
+    assert_equal [943, 20], recommender.user_factors.shape
+    assert recommender.global_mean
+
+    recs = recommender.item_recs("Star Wars (1977)", count: 10).map { |r| r[:movie_id] }
     assert_includes recs, "Empire Strikes Back, The (1980)"
     assert_includes recs, "Return of the Jedi (1983)"
   end
@@ -76,7 +153,7 @@ class RecommenderTest < Minitest::Test
       {username: 'alice', movie_id: 1, stars: 1},
       {username: 'bob', movie_id: 1, stars: 2}
     ])
-    recommender.user_recs(1)
+    recommender.user_recs('alice')
     recommender.item_recs(1)
   end
 
@@ -88,12 +165,46 @@ class RecommenderTest < Minitest::Test
     recommender.fit(train_set, validation_set: validation_set)
   end
 
+  def test_validation_set_explicit_custom_columns
+    data = Disco.load_movielens
+    data = reshape_training_set data
+
+    train_set = data.first(80000)
+    validation_set = data.last(20000)
+
+    recommender = Disco::Recommender.new(
+      user_key: :userid,
+      item_key: :movie_id,
+      value_key: :stars,
+      implicit: false,
+      factors: 20
+    )
+    recommender.fit(train_set, validation_set: validation_set)
+  end
+
   def test_validation_set_implicit
     data = Disco.load_movielens
     data.each { |v| v.delete(:rating) }
     train_set = data.first(80000)
     validation_set = data.last(20000)
     recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(train_set, validation_set: validation_set)
+  end
+
+  def test_validation_set_implicit_custom_columns
+    data = Disco.load_movielens
+    data = reshape_training_set data
+    data.each { |v| v.delete(:stars) }
+
+    train_set = data.first(80000)
+    validation_set = data.last(20000)
+
+    recommender = Disco::Recommender.new(
+      user_key: :userid,
+      item_key: :movie_id,
+      implicit: true,
+      factors: 20
+    )
     recommender.fit(train_set, validation_set: validation_set)
   end
 
@@ -113,12 +224,28 @@ class RecommenderTest < Minitest::Test
     assert_equal "Missing user_id", error.message
   end
 
+  def test_missing_custom_user_id
+    recommender = Disco::Recommender.new user_key: :username
+    error = assert_raises ArgumentError do
+      recommender.fit([{item_id: 1, rating: 5}])
+    end
+    assert_equal "Missing username", error.message
+  end
+
   def test_missing_item_id
     recommender = Disco::Recommender.new
     error = assert_raises ArgumentError do
       recommender.fit([{user_id: 1, rating: 5}])
     end
     assert_equal "Missing item_id", error.message
+  end
+
+  def test_missing_custom_item_id
+    recommender = Disco::Recommender.new item_key: :movie_id
+    error = assert_raises ArgumentError do
+      recommender.fit([{user_id: 1, rating: 5}])
+    end
+    assert_equal "Missing movie_id", error.message
   end
 
   def test_multiple_user_item

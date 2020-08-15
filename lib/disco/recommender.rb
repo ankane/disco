@@ -17,7 +17,7 @@ module Disco
       validation_set = to_dataset(validation_set) if validation_set
 
       # NOTE: use user-provided implicit flag or derive from train-set
-      @implicit ||= !train_set.any? { |v| v[:rating] }
+      @implicit = !train_set.any? { |v| v[:rating] } if @implicit.nil?
 
       unless @implicit
         ratings = train_set.map { |o| o[value_key] }
@@ -84,7 +84,7 @@ module Disco
 
         predictions =
           @item_map.keys.zip(predictions).map do |item_id, pred|
-            {item_id: item_id, score: pred}
+            {@item_key => item_id, score: pred}
           end
 
         if item_ids
@@ -162,7 +162,7 @@ module Disco
           result.map do |v|
             {
               # ids from batch_insert start at 1 instead of 0
-              item_id: keys[v[:id] - 1],
+              @item_key => keys[v[:id] - 1],
               # convert cosine distance to cosine similarity
               score: 1 - v[:distance]
             }
@@ -172,7 +172,7 @@ module Disco
 
           predictions =
             map.keys.zip(predictions).map do |item_id, pred|
-              {item_id: item_id, score: pred}
+              {@item_key => item_id, score: pred}
             end
 
           max_score = predictions.delete_at(i)[:score]
