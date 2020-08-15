@@ -70,6 +70,14 @@ class RecommenderTest < Minitest::Test
     ])
     recommender.user_recs(1)
     recommender.item_recs(1)
+
+    recommender = Disco::Recommender.new user_key: :username, item_key: :movie_id, value_key: :stars, implicit: false
+    recommender.fit([
+      {username: 'alice', movie_id: 1, stars: 1},
+      {username: 'bob', movie_id: 1, stars: 2}
+    ])
+    recommender.user_recs(1)
+    recommender.item_recs(1)
   end
 
   def test_validation_set_explicit

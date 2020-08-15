@@ -2,26 +2,31 @@ module Disco
   class Recommender
     attr_reader :global_mean, :item_factors, :user_factors
 
-    def initialize(factors: 8, epochs: 20, verbose: nil)
+    def initialize(factors: 8, epochs: 20, verbose: nil, user_key: :user_id, item_key: :item_id, value_key: nil, implicit: nil)
       @factors = factors
       @epochs = epochs
       @verbose = verbose
+      @user_key = user_key
+      @item_key = item_key
+      @value_key = value_key
+      @implicit = implicit
     end
 
     def fit(train_set, validation_set: nil)
       train_set = to_dataset(train_set)
       validation_set = to_dataset(validation_set) if validation_set
 
-      @implicit = !train_set.any? { |v| v[:rating] }
+      # NOTE: use user-provided implicit flag or derive from train-set
+      @implicit ||= !train_set.any? { |v| v[:rating] }
 
       unless @implicit
-        ratings = train_set.map { |o| o[:rating] }
+        ratings = train_set.map { |o| o[value_key] }
         check_ratings(ratings)
         @min_rating = ratings.min
         @max_rating = ratings.max
 
         if validation_set
-          check_ratings(validation_set.map { |o| o[:rating] })
+          check_ratings(validation_set.map { |o| o[value_key] })
         end
       end
 
@@ -30,10 +35,9 @@ module Disco
 
       @rated = Hash.new { |hash, key| hash[key] = {} }
       input = []
-      value_key = @implicit ? :value : :rating
       train_set.each do |v|
-        u = @user_map[v[:user_id]]
-        i = @item_map[v[:item_id]]
+        u = @user_map[v[@user_key]]
+        i = @item_map[v[@item_key]]
         @rated[u][i] = true
 
         # explicit will always have a value due to check_ratings
@@ -45,8 +49,8 @@ module Disco
       if validation_set
         eval_set = []
         validation_set.each do |v|
-          u = @user_map[v[:user_id]]
-          i = @item_map[v[:item_id]]
+          u = @user_map[v[@user_key]]
+          i = @item_map[v[@item_key]]
 
           # set to non-existent item
           u ||= -1
@@ -122,6 +126,11 @@ module Disco
 
     private
 
+    # NOTE: use user-provided value key, or derive key from mode
+    def value_key
+      @value_key ||= @implicit ? :value : :rating
+    end
+
     def create_index(factors)
       require "ngt"
 
@@ -180,11 +189,11 @@ module Disco
     end
 
     def create_maps(train_set)
-      user_ids = train_set.map { |v| v[:user_id] }.uniq.sort
-      item_ids = train_set.map { |v| v[:item_id] }.uniq.sort
+      user_ids = train_set.map { |v| v[@user_key] }.uniq.sort
+      item_ids = train_set.map { |v| v[@item_key] }.uniq.sort
 
-      raise ArgumentError, "Missing user_id" if user_ids.any?(&:nil?)
-      raise ArgumentError, "Missing item_id" if item_ids.any?(&:nil?)
+      raise ArgumentError, "Missing #{@user_key}" if user_ids.any?(&:nil?)
+      raise ArgumentError, "Missing #{@item_key}" if item_ids.any?(&:nil?)
 
       @user_map = user_ids.zip(user_ids.size.times).to_h
       @item_map = item_ids.zip(item_ids.size.times).to_h
@@ -225,12 +234,15 @@ module Disco
     def marshal_dump
       obj = {
         implicit: @implicit,
+        user_key: @user_key,
+        item_key: @item_key,
+        value_key: @value_key,
         user_map: @user_map,
         item_map: @item_map,
         rated: @rated,
         global_mean: @global_mean,
         user_factors: @user_factors,
-        item_factors: @item_factors
+        item_factors: @item_factors,
       }
 
       unless @implicit
@@ -243,6 +255,9 @@ module Disco
 
     def marshal_load(obj)
       @implicit = obj[:implicit]
+      @user_key = obj[:user_key]
+      @item_key = obj[:item_key]
+      @value_key = obj[:value_key]
       @user_map = obj[:user_map]
       @item_map = obj[:item_map]
       @rated = obj[:rated]

@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "daru"
   spec.add_development_dependency "rover-df"
   spec.add_development_dependency "ngt", ">= 0.3.0"
+  spec.add_development_dependency "pry"
 end
