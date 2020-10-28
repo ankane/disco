@@ -72,6 +72,23 @@ class RecommenderTest < Minitest::Test
     recommender.item_recs(1)
   end
 
+  def test_rated
+    data = [
+      {user_id: 1, item_id: "A"},
+      {user_id: 1, item_id: "B"},
+      {user_id: 1, item_id: "C"},
+      {user_id: 1, item_id: "D"},
+      {user_id: 2, item_id: "C"},
+      {user_id: 2, item_id: "D"},
+      {user_id: 2, item_id: "E"},
+      {user_id: 2, item_id: "F"}
+    ]
+    recommender = Disco::Recommender.new
+    recommender.fit(data)
+    assert_equal ["E", "F"], recommender.user_recs(1).map { |r| r[:item_id] }.sort
+    assert_equal ["A", "B"], recommender.user_recs(2).map { |r| r[:item_id] }.sort
+  end
+
   def test_validation_set_explicit
     data = Disco.load_movielens
     train_set = data.first(80000)
