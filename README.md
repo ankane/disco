@@ -6,7 +6,7 @@
 - Works with explicit and implicit feedback
 - Uses high-performance matrix factorization
 
-[![Build Status](https://travis-ci.org/ankane/disco.svg?branch=master)](https://travis-ci.org/ankane/disco)
+[![Build Status](https://github.com/ankane/disco/workflows/build/badge.svg?branch=master)](https://github.com/ankane/disco/actions)
 
 ## Installation
 
