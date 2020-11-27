@@ -144,6 +144,14 @@ class RecommenderTest < Minitest::Test
     assert_equal "Multiple observations for user 1, item 2", error.message
   end
 
+  def test_not_fit
+    recommender = Disco::Recommender.new
+    error = assert_raises do
+      recommender.user_recs(1)
+    end
+    assert_equal "Not fit", error.message
+  end
+
   def test_rover
     movielens = Disco.load_movielens
 

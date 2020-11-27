@@ -72,6 +72,7 @@ module Disco
     end
 
     def user_recs(user_id, count: 5, item_ids: nil)
+      check_fit
       u = @user_map[user_id]
 
       if u
@@ -103,20 +104,24 @@ module Disco
     end
 
     def optimize_similar_items
+      check_fit
       @item_index = create_index(@item_factors)
     end
     alias_method :optimize_item_recs, :optimize_similar_items
 
     def optimize_similar_users
+      check_fit
       @user_index = create_index(@user_factors)
     end
 
     def similar_items(item_id, count: 5)
+      check_fit
       similar(item_id, @item_map, @item_factors, item_norms, count, @item_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
+      check_fit
       similar(user_id, @user_map, @user_factors, user_norms, count, @user_index)
     end
 
@@ -201,6 +206,10 @@ module Disco
 
     def check_training_set(train_set)
       raise ArgumentError, "No training data" if train_set.empty?
+    end
+
+    def check_fit
+      raise "Not fit" unless defined?(@implicit)
     end
 
     def to_dataset(dataset)
