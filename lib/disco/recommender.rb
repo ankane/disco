@@ -71,7 +71,12 @@ module Disco
       @item_index = nil
     end
 
+    # generates a prediction even if a user has already rated the item
     def predict(data)
+      data = to_dataset(data)
+      singular = !data.is_a?(Array)
+      data = [data] if singular
+
       u = data.map { |v| @user_map[v[:user_id]] }
       i = data.map { |v| @item_map[v[:item_id]] }
 
@@ -84,7 +89,9 @@ module Disco
       predictions = @user_factors[u, true].inner(@item_factors[i, true])
       predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
       predictions[new_index] = @global_mean
-      predictions.to_a
+      predictions = predictions.to_a
+
+      singular ? predictions.first : predictions
     end
 
     def user_recs(user_id, count: 5, item_ids: nil)

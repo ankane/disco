@@ -134,12 +134,34 @@ class RecommenderTest < Minitest::Test
     assert_empty [], recommender.user_recs(1, item_ids: [1000])
   end
 
-  # TODO better test
+  # TODO better test (need deterministic output)
   def test_predict
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
-    recommender.predict(data.first(5))
+    assert_kind_of Float, recommender.predict(user_id: 1, item_id: "Star Wars (1977)")
+  end
+
+  # TODO better test (need deterministic output)
+  def test_predict_many
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+    assert_kind_of Array, recommender.predict(data.first(5))
+  end
+
+  def test_predict_new_user
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+    assert_equal recommender.global_mean, recommender.predict(user_id: 100000, item_id: "Star Wars (1977)")
+  end
+
+  def test_predict_new_item
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+    assert_equal recommender.global_mean, recommender.predict(user_id: 1, item_id: "New movie")
   end
 
   def test_predict_user_recs_consistent
