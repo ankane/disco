@@ -100,7 +100,6 @@ module Disco
 
       if u
         predictions = @item_factors.inner(@user_factors[u, true])
-        predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
 
         predictions =
           @item_map.keys.zip(predictions).map do |item_id, pred|
@@ -118,6 +117,13 @@ module Disco
 
         predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
         predictions = predictions.first(count) if count && !item_ids
+
+        if @min_rating
+          predictions.each do |pred|
+            pred[:score] = pred[:score].clamp(@min_rating, @max_rating)
+          end
+        end
+
         predictions
       else
         # no items if user is unknown
