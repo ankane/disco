@@ -1,8 +1,12 @@
-## 0.2.2 (unreleased)
+## 0.2.3 (2020-11-28)
 
 - Added `predict` method
 - Fixed bad recommendations and scores with `user_recs` and explicit feedback
 - Fixed `item_ids` option for `user_recs`
+
+## 0.2.2 (n/a)
+
+- Not available (released by previous gem owner)
 
 ## 0.2.1 (2020-10-28)
 
