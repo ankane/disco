@@ -93,7 +93,7 @@ class RecommenderTest < Minitest::Test
     data = Disco.load_movielens
     train_set = data.first(80000)
     validation_set = data.last(20000)
-    recommender = Disco::Recommender.new(factors: 20)
+    recommender = Disco::Recommender.new(factors: 20, verbose: false)
     recommender.fit(train_set, validation_set: validation_set)
   end
 
@@ -102,7 +102,7 @@ class RecommenderTest < Minitest::Test
     data.each { |v| v.delete(:rating) }
     train_set = data.first(80000)
     validation_set = data.last(20000)
-    recommender = Disco::Recommender.new(factors: 20)
+    recommender = Disco::Recommender.new(factors: 20, verbose: false)
     recommender.fit(train_set, validation_set: validation_set)
   end
 
