@@ -64,10 +64,10 @@ Use the `count` option to specify the number of recommendations (default is 5)
 recommender.user_recs(user_id, count: 3)
 ```
 
-Get predicted ratings for specific items
+Get predicted ratings for specific users and items
 
 ```ruby
-recommender.user_recs(user_id, item_ids: [1, 2, 3])
+recommender.predict([{user_id: 1, item_id: 2}, {user_id: 2, item_id: 4}])
 ```
 
 Get similar users
