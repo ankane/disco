@@ -134,6 +134,14 @@ class RecommenderTest < Minitest::Test
     assert_empty [], recommender.user_recs(1, item_ids: [1000])
   end
 
+  # TODO better test
+  def test_predict
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+    recommender.predict(data.first(5))
+  end
+
   def test_no_training_data
     recommender = Disco::Recommender.new
     error = assert_raises ArgumentError do

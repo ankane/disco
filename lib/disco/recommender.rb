@@ -71,12 +71,28 @@ module Disco
       @item_index = nil
     end
 
+    def predict(data)
+      u = data.map { |v| @user_map[v[:user_id]] }
+      i = data.map { |v| @item_map[v[:item_id]] }
+
+      new_index = data.each_index.select { |index| u[index].nil? || i[index].nil? }
+      new_index.each do |j|
+        u[j] = 0
+        i[j] = 0
+      end
+
+      predictions = @user_factors[u, true].inner(@item_factors[i, true])
+      predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
+      predictions[new_index] = @global_mean
+      predictions.to_a
+    end
+
     def user_recs(user_id, count: 5, item_ids: nil)
       check_fit
       u = @user_map[user_id]
 
       if u
-        predictions = @global_mean + @item_factors.dot(@user_factors[u, true])
+        predictions = @item_factors.dot(@user_factors[u, true])
         predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
 
         predictions =
