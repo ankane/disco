@@ -118,6 +118,8 @@ module Disco
         predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
         predictions = predictions.first(count) if count && !item_ids
 
+        # clamp *after* sorting
+        # also, only needed for returned predictions
         if @min_rating
           predictions.each do |pred|
             pred[:score] = pred[:score].clamp(@min_rating, @max_rating)
