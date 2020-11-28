@@ -106,6 +106,15 @@ class RecommenderTest < Minitest::Test
     recommender.fit(train_set, validation_set: validation_set)
   end
 
+  def test_user_recs_item_ids
+    recommender = Disco::Recommender.new
+    recommender.fit([
+      {user_id: 1, item_id: 1, rating: 5},
+      {user_id: 1, item_id: 2, rating: 3}
+    ])
+    assert_equal [2], recommender.user_recs(1, item_ids: [2]).map { |r| r[:item_id] }
+  end
+
   def test_user_recs_new_user
     recommender = Disco::Recommender.new
     recommender.fit([
@@ -113,6 +122,16 @@ class RecommenderTest < Minitest::Test
       {user_id: 2, item_id: 1, rating: 3}
     ])
     assert_empty recommender.user_recs(1000)
+  end
+
+  # TODO return global mean?
+  def test_user_recs_new_item
+    recommender = Disco::Recommender.new
+    recommender.fit([
+      {user_id: 1, item_id: 1, rating: 5},
+      {user_id: 2, item_id: 1, rating: 3}
+    ])
+    assert_empty [], recommender.user_recs(1, item_ids: [1000])
   end
 
   def test_no_training_data

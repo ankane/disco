@@ -1,3 +1,7 @@
+## 0.2.2 (unreleased)
+
+- Fixed `item_ids` option for `user_recs`
+
 ## 0.2.1 (2020-10-28)
 
 - Fixed issue with `user_recs` returning rated items

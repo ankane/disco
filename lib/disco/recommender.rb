@@ -86,7 +86,7 @@ module Disco
 
         if item_ids
           idx = item_ids.map { |i| @item_map[i] }.compact
-          predictions.values_at(*idx)
+          predictions = predictions.values_at(*idx)
         else
           @rated[u].keys.sort_by { |v| -v }.each do |i|
             predictions.delete_at(i)
