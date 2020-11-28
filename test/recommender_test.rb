@@ -27,7 +27,7 @@ class RecommenderTest < Minitest::Test
     assert_includes item_ids, "Empire Strikes Back, The (1980)"
     assert_includes item_ids, "Return of the Jedi (1983)"
 
-    assert_in_delta 0.9972, recs.first[:score]
+    assert_in_delta 0.9972, recs.first[:score], 0.01
   end
 
   def test_implicit
@@ -250,6 +250,6 @@ class RecommenderTest < Minitest::Test
     assert_includes item_ids, "Empire Strikes Back, The (1980)"
     assert_includes item_ids, "Return of the Jedi (1983)"
 
-    assert_in_delta 0.9972, recs.first[:score]
+    assert_in_delta 0.9972, recs.first[:score], 0.01
   end
 end
