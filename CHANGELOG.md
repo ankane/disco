@@ -1,8 +1,8 @@
 ## 0.2.2 (unreleased)
 
 - Added `predict` method
+- Fixed bad recommendations and scores with `user_recs` and explicit feedback
 - Fixed `item_ids` option for `user_recs`
-- Fixed `user_recs`
 
 ## 0.2.1 (2020-10-28)
 
