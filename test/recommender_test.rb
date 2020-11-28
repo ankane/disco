@@ -106,6 +106,15 @@ class RecommenderTest < Minitest::Test
     recommender.fit(train_set, validation_set: validation_set)
   end
 
+  def test_user_recs_new_user
+    recommender = Disco::Recommender.new
+    recommender.fit([
+      {user_id: 1, item_id: 1, rating: 5},
+      {user_id: 2, item_id: 1, rating: 3}
+    ])
+    assert_empty recommender.user_recs(1000)
+  end
+
   def test_no_training_data
     recommender = Disco::Recommender.new
     error = assert_raises ArgumentError do
