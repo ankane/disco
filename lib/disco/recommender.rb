@@ -92,7 +92,7 @@ module Disco
       u = @user_map[user_id]
 
       if u
-        predictions = @item_factors.dot(@user_factors[u, true])
+        predictions = @item_factors.inner(@user_factors[u, true])
         predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
 
         predictions =
