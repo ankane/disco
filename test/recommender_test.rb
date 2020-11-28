@@ -124,7 +124,7 @@ class RecommenderTest < Minitest::Test
     assert_empty recommender.user_recs(1000)
   end
 
-  # TODO return global mean?
+  # only return items that exist
   def test_user_recs_new_item
     recommender = Disco::Recommender.new
     recommender.fit([
