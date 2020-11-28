@@ -47,7 +47,7 @@ class RecommenderTest < Minitest::Test
 
     assert_equal [1664, 20], recommender.item_factors.shape
     assert_equal [943, 20], recommender.user_factors.shape
-    assert recommender.global_mean
+    assert_equal 0, recommender.global_mean
 
     recs = recommender.item_recs("Star Wars (1977)", count: 10).map { |r| r[:item_id] }
     assert_includes recs, "Empire Strikes Back, The (1980)"
