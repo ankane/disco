@@ -3,7 +3,19 @@ on: [push, pull_request]
 jobs:
   build:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - ruby: 2.7
+          gemfile: Gemfile
+        - ruby: 2.6
+          gemfile: gemfiles/activerecord60.gemfile
+        - ruby: 2.5
+          gemfile: gemfiles/activerecord52.gemfile
+    runs-on: ubuntu-20.04
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
