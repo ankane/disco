@@ -46,13 +46,13 @@ recommender.fit([
 
 > Use `value` instead of rating for implicit feedback
 
-Get user-based (user-item) recommendations - “users like you also liked”
+Get user-based recommendations - “users like you also liked”
 
 ```ruby
 recommender.user_recs(user_id)
 ```
 
-Get item-based (item-item) recommendations - “users who liked this item also liked”
+Get item-based recommendations - “users who liked this item also liked”
 
 ```ruby
 recommender.item_recs(item_id)
