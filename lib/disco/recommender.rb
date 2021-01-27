@@ -6,6 +6,8 @@ module Disco
       @factors = factors
       @epochs = epochs
       @verbose = verbose
+      @user_map = {}
+      @item_map = {}
     end
 
     def fit(train_set, validation_set: nil)
@@ -26,7 +28,7 @@ module Disco
       end
 
       check_training_set(train_set)
-      create_maps(train_set)
+      update_maps(train_set)
 
       @rated = Hash.new { |hash, key| hash[key] = {} }
       input = []
@@ -211,15 +213,14 @@ module Disco
       end
     end
 
-    def create_maps(train_set)
-      user_ids = train_set.map { |v| v[:user_id] }.uniq.sort
-      item_ids = train_set.map { |v| v[:item_id] }.uniq.sort
+    def update_maps(train_set)
+      raise ArgumentError, "Missing user_id" if train_set.any? { |v| v[:user_id].nil? }
+      raise ArgumentError, "Missing item_id" if train_set.any? { |v| v[:item_id].nil? }
 
-      raise ArgumentError, "Missing user_id" if user_ids.any?(&:nil?)
-      raise ArgumentError, "Missing item_id" if item_ids.any?(&:nil?)
-
-      @user_map = user_ids.zip(user_ids.size.times).to_h
-      @item_map = item_ids.zip(item_ids.size.times).to_h
+      train_set.each do |v|
+        @user_map[v[:user_id]] ||= @user_map.size
+        @item_map[v[:item_id]] ||= @item_map.size
+      end
     end
 
     def check_ratings(ratings)
