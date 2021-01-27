@@ -160,7 +160,8 @@ module Disco
       require "ngt"
 
       index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
-      index.batch_insert(factors)
+      ids = index.batch_insert(factors)
+      raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
       index
     end
 
