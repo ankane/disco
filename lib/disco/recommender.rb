@@ -145,13 +145,13 @@ module Disco
 
     def similar_items(item_id, count: 5)
       check_fit
-      similar(item_id, @item_map, @item_factors, item_norms, count, @item_index)
+      similar(item_id, @item_map, @item_factors, @item_index ? nil : item_norms, count, @item_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
       check_fit
-      similar(user_id, @user_map, @user_factors, user_norms, count, @user_index)
+      similar(user_id, @user_map, @user_factors, @user_index ? nil : user_norms, count, @user_index)
     end
 
     private
