@@ -14,19 +14,18 @@ module Disco
       train_set = to_dataset(train_set)
       validation_set = to_dataset(validation_set) if validation_set
 
-      @implicit = !train_set.any? { |v| v[:rating] }
+      check_training_set(train_set)
 
+      @implicit = !train_set.any? { |v| v[:rating] }
       unless @implicit
-        ratings = train_set.map { |o| o[:rating] }
-        check_ratings(ratings)
-        @min_rating, @max_rating = ratings.minmax
+        check_ratings(train_set)
+        @min_rating, @max_rating = train_set.minmax_by { |o| o[:rating] }.map { |o| o[:rating] }
 
         if validation_set
-          check_ratings(validation_set.map { |o| o[:rating] })
+          check_ratings(validation_set)
         end
       end
 
-      check_training_set(train_set)
       update_maps(train_set)
 
       @rated = Hash.new { |hash, key| hash[key] = {} }
@@ -224,10 +223,10 @@ module Disco
     end
 
     def check_ratings(ratings)
-      unless ratings.all? { |r| !r.nil? }
+      unless ratings.all? { |r| !r[:rating].nil? }
         raise ArgumentError, "Missing ratings"
       end
-      unless ratings.all? { |r| r.is_a?(Numeric) }
+      unless ratings.all? { |r| r[:rating].is_a?(Numeric) }
         raise ArgumentError, "Ratings must be numeric"
       end
     end
