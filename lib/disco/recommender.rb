@@ -19,8 +19,7 @@ module Disco
       unless @implicit
         ratings = train_set.map { |o| o[:rating] }
         check_ratings(ratings)
-        @min_rating = ratings.min
-        @max_rating = ratings.max
+        @min_rating, @max_rating = ratings.minmax
 
         if validation_set
           check_ratings(validation_set.map { |o| o[:rating] })
