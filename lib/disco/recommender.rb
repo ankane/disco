@@ -192,7 +192,7 @@ module Disco
             }
           end
         else
-          predictions = factors.dot(factors[i, true]) / norms
+          predictions = factors.inner(factors[i, true]) / norms
 
           predictions =
             map.keys.zip(predictions).map do |item_id, pred|
