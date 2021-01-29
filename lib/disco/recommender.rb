@@ -192,6 +192,7 @@ module Disco
             }
           end
         else
+          # cosine similarity
           predictions = factors.inner(factors[i, true]) / norms
 
           predictions =
