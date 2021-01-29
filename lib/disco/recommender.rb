@@ -192,8 +192,8 @@ module Disco
             }
           end
         else
-          # cosine similarity
-          predictions = factors.inner(factors[i, true]) / (norms[i] * norms)
+          # cosine similarity without norms[i]
+          predictions = factors.inner(factors[i, true]) / norms
 
           predictions =
             map.keys.zip(predictions).map do |item_id, pred|
@@ -203,9 +203,9 @@ module Disco
           max_score = predictions.delete_at(i)[:score]
           predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
           predictions = predictions.first(count) if count
-          # divide by max score to get cosine similarity
+          # divide by norms[i] to get cosine similarity
           # only need to do for returned records
-          predictions.each { |pred| pred[:score] /= max_score }
+          predictions.each { |pred| pred[:score] /= norms[i] }
           predictions
         end
       else
