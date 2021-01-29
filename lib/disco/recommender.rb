@@ -193,6 +193,7 @@ module Disco
           end
         else
           # cosine similarity without norms[i]
+          # otherwise, denominator would be (norms[i] * norms)
           predictions = factors.inner(factors[i, true]) / norms
 
           predictions =
