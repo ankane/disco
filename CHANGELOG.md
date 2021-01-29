@@ -1,3 +1,7 @@
+## 0.2.4 (unreleased)
+
+- Fixed similarity calculation
+
 ## 0.2.3 (2020-11-28)
 
 - Added `predict` method
