@@ -157,6 +157,8 @@ module Disco
     def create_index(factors)
       require "ngt"
 
+      # could speed up search with normalized cosine
+      # https://github.com/yahoojapan/NGT/issues/36
       index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
       ids = index.batch_insert(factors)
       raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
