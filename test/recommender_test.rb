@@ -261,6 +261,9 @@ class RecommenderTest < Minitest::Test
 
     recs = recommender.item_recs("Star Wars (1977)")
     assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
+    original_recs.zip(recs).each do |exp, act|
+      assert_in_delta exp[:score], act[:score]
+    end
     assert_equal 5, recs.size
 
     item_ids = recs.map { |r| r[:item_id] }
