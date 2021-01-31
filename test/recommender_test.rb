@@ -255,9 +255,12 @@ class RecommenderTest < Minitest::Test
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
 
+    original_recs = recommender.item_recs("Star Wars (1977)")
+
     recommender.optimize_similar_items
 
     recs = recommender.item_recs("Star Wars (1977)")
+    assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
     assert_equal 5, recs.size
 
     item_ids = recs.map { |r| r[:item_id] }
