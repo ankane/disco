@@ -201,6 +201,8 @@ bin = File.binread("recommender.bin")
 recommender = Marshal.load(bin)
 ```
 
+Alternatively, you can store only the factors and use a library like [Neighbor](https://github.com/ankane/neighbor)
+
 ## Algorithms
 
 Disco uses high-performance matrix factorization.
