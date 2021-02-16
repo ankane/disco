@@ -1,6 +1,6 @@
 module Disco
   class Recommender
-    attr_reader :global_mean, :item_factors, :user_factors
+    attr_reader :global_mean
 
     def initialize(factors: 8, epochs: 20, verbose: nil)
       @factors = factors
@@ -150,6 +150,32 @@ module Disco
     def similar_users(user_id, count: 5)
       check_fit
       similar(user_id, @user_map, @user_factors, @user_index ? nil : user_norms, count, @user_index)
+    end
+
+    def user_ids
+      @user_map.keys
+    end
+
+    def item_ids
+      @item_map.keys
+    end
+
+    def user_factors(user_id = nil)
+      if user_id
+        u = @user_map[user_id]
+        @user_factors[u, true] if u
+      else
+        @user_factors
+      end
+    end
+
+    def item_factors(item_id = nil)
+      if item_id
+        i = @item_map[item_id]
+        @item_factors[i, true] if i
+      else
+        @item_factors
+      end
     end
 
     private

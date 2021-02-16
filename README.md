@@ -283,17 +283,31 @@ This should be called after fitting or loading the model.
 
 ## Reference
 
+Get ids
+
+```ruby
+recommender.user_ids
+recommender.item_ids
+```
+
 Get the global mean
 
 ```ruby
 recommender.global_mean
 ```
 
-Get the factors
+Get factors
 
 ```ruby
 recommender.user_factors
 recommender.item_factors
+```
+
+Get factors for specific users and items
+
+```ruby
+recommender.user_factors(user_id)
+recommender.item_factors(item_id)
 ```
 
 ## Credits

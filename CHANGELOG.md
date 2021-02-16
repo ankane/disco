@@ -1,3 +1,9 @@
+## 0.2.4 (unreleased)
+
+- Added `user_ids` and `item_ids` methods
+- Added `user_id` argument to `user_factors`
+- Added `item_id` argument to `item_factors`
+
 ## 0.2.3 (2020-11-28)
 
 - Added `predict` method
