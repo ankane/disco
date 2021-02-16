@@ -203,7 +203,7 @@ module Disco
               {item_id: item_id, score: pred}
             end
 
-          max_score = predictions.delete_at(i)[:score]
+          predictions.delete_at(i)
           predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
           predictions = predictions.first(count) if count
           # divide by norms[i] to get cosine similarity
