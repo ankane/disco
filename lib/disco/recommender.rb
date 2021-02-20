@@ -94,7 +94,6 @@ module Disco
       check_fit
       u = @user_map[user_id]
 
-      result = []
       if u
         rated = item_ids ? {} : @rated[u]
         max_count = count + rated.size
@@ -122,18 +121,19 @@ module Disco
         predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
 
         keys = @item_map.keys
+        result = []
         ids.each_with_index do |item_id, i|
           next if rated[item_id]
 
           result << {item_id: keys[item_id], score: predictions[i]}
           break if result.size == count
         end
+        result
       else
         # no items if user is unknown
         # TODO maybe most popular items
+        []
       end
-
-      result
     end
 
     def optimize_user_recs
