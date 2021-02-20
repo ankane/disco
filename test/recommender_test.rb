@@ -169,12 +169,18 @@ class RecommenderTest < Minitest::Test
     assert_empty [], recommender.user_recs(1, item_ids: [1000])
   end
 
-  # TODO better test (need deterministic output)
   def test_predict
     data = Disco.load_movielens
-    recommender = Disco::Recommender.new(factors: 20)
-    recommender.fit(data)
-    assert_kind_of Array, recommender.predict(data.first(5))
+    data.shuffle!(random: Random.new(1))
+
+    train_set = data.first(80000)
+    valid_set = data.last(20000)
+
+    recommender = Disco::Recommender.new(factors: 20, verbose: false)
+    recommender.fit(train_set, validation_set: valid_set)
+
+    predictions = recommender.predict(valid_set)
+    assert_in_delta 0.91, Disco::Metrics.rmse(valid_set.map { |v| v[:rating] }, predictions), 0.01
   end
 
   def test_predict_new_user
