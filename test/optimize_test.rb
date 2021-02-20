@@ -86,6 +86,24 @@ class OptimizeTest < Minitest::Test
     assert_in_delta 0.9972, recs.first[:score], 0.01
   end
 
+  def test_optimize_similar_users_ngt
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+
+    original_recs = recommender.similar_users(1)
+
+    recommender.optimize_similar_users(library: "ngt")
+
+    recs = recommender.similar_users(1)
+
+    assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
+    original_recs.zip(recs).each do |exp, act|
+      assert_in_delta exp[:score], act[:score]
+    end
+    assert_equal 5, recs.size
+  end
+
   def windows?
     Gem.win_platform?
   end
