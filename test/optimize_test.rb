@@ -86,8 +86,6 @@ class OptimizeTest < Minitest::Test
     assert_in_delta 0.9972, recs.first[:score], 0.01
   end
 
-  # flaky with count: 5 (likely due to ANN)
-  # however, count: 10 seems to match exactly
   def test_optimize_similar_users_ngt
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
@@ -99,8 +97,13 @@ class OptimizeTest < Minitest::Test
 
     recs = recommender.similar_users(1, count: 10)
 
+    # won't match exactly due to ANN
+    matching_ids = original_recs.map { |v| v[:item_id] } & recs.map { |v| v[:item_id] }
+    assert_includes 8..10, matching_ids.size
     assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
-    original_recs.zip(recs).each do |exp, act|
+    matching_ids.each do |item_id|
+      exp = original_recs.find { |v| v[:item_id] == item_id }
+      act = recs.find { |v| v[:item_id] == item_id }
       assert_in_delta exp[:score], act[:score]
     end
     assert_equal 10, recs.size
