@@ -28,6 +28,10 @@ class RecommenderTest < Minitest::Test
     assert_includes item_ids, "Return of the Jedi (1983)"
 
     assert_in_delta 0.9972, recs.first[:score], 0.01
+
+    assert_equal (1664 - data.select { |v| v[:user_id] == 1 }.map { |v| v[:item_id] }.uniq.size), recommender.user_recs(1, count: nil).size
+    assert_equal 1663, recommender.item_recs("Star Wars (1977)", count: nil).size
+    assert_equal 942, recommender.similar_users(1, count: nil).size
   end
 
   def test_implicit
