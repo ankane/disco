@@ -2,12 +2,13 @@ module Disco
   class Recommender
     attr_reader :global_mean
 
-    def initialize(factors: 8, epochs: 20, verbose: nil)
+    def initialize(factors: 8, epochs: 20, verbose: nil, top_items: false)
       @factors = factors
       @epochs = epochs
       @verbose = verbose
       @user_map = {}
       @item_map = {}
+      @top_items = top_items
     end
 
     def fit(train_set, validation_set: nil)
@@ -40,6 +41,16 @@ module Disco
         input << [u, i, v[value_key] || 1]
       end
       @rated.default = nil
+
+      if @top_items
+        @item_count = [0] * @item_map.size
+        @item_sum = [0.0] * @item_map.size
+        train_set.each do |v|
+          i = @item_map[v[:item_id]]
+          @item_count[i] += 1
+          @item_sum[i] += (v[value_key] || 1)
+        end
+      end
 
       eval_set = nil
       if validation_set
@@ -129,9 +140,9 @@ module Disco
           break if result.size == count
         end
         result
+      elsif @top_items
+        top_items(count: count)
       else
-        # no items if user is unknown
-        # TODO maybe most popular items
         []
       end
     end
@@ -145,6 +156,27 @@ module Disco
     def similar_users(user_id, count: 5)
       check_fit
       similar(user_id, @user_map, user_norms, count, @similar_users_index)
+    end
+
+    def top_items(count: 5)
+      check_fit
+      raise "top_items not computed" unless @top_items
+
+      if @implicit
+        scores = @item_count
+      else
+        require "wilson_score"
+
+        range = @min_rating..@max_rating
+        scores = @item_sum.zip(@item_count).map { |s, c| WilsonScore.rating_lower_bound(s / c, c, range) }
+      end
+
+      scores = scores.map.with_index.sort_by { |s, _| -s }
+      scores = scores.first(count) if count
+      item_ids = item_ids()
+      scores.map do |s, i|
+        {item_id: item_ids[i], score: s}
+      end
     end
 
     def user_ids
@@ -341,6 +373,11 @@ module Disco
         obj[:max_rating] = @max_rating
       end
 
+      if @top_items
+        obj[:item_count] = @item_count
+        obj[:item_sum] = @item_sum
+      end
+
       obj
     end
 
@@ -356,6 +393,12 @@ module Disco
       unless @implicit
         @min_rating = obj[:min_rating]
         @max_rating = obj[:max_rating]
+      end
+
+      @top_items = obj.key?(:item_count)
+      if @top_items
+        @item_count = obj[:item_count]
+        @item_sum = obj[:item_sum]
       end
     end
   end

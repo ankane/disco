@@ -239,6 +239,16 @@ There are a number of ways to deal with this, but here are some common ones:
 - For user-based recommendations, show new users the most popular items.
 - For item-based recommendations, make content-based recommendations with a gem like [tf-idf-similarity](https://github.com/jpmckinney/tf-idf-similarity).
 
+Get top items with:
+
+```ruby
+recommender = Disco::Recommender.new(top_items: true)
+recommender.fit(data)
+recommender.top_items
+```
+
+This uses [Wilson score](https://www.evanmiller.org/how-not-to-sort-by-average-rating.html) for explicit feedback (add [wilson_score](https://github.com/instacart/wilson_score) your application’s Gemfile) and item frequency for implicit feedback.
+
 ## Data
 
 Data can be an array of hashes

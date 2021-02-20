@@ -93,6 +93,41 @@ class RecommenderTest < Minitest::Test
     assert_equal ["A", "B"], recommender.user_recs(2).map { |r| r[:item_id] }.sort
   end
 
+  def test_top_items_explicit
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20, top_items: true)
+    recommender.fit(data)
+    top_items = recommender.top_items
+    assert_equal top_items, recommender.user_recs("unknown")
+
+    recommender = Marshal.load(Marshal.dump(recommender))
+    assert_equal top_items, recommender.top_items
+    assert_equal top_items, recommender.user_recs("unknown")
+  end
+
+  def test_top_items_implicit
+    data = Disco.load_movielens
+    data.each { |v| v.delete(:rating) }
+    recommender = Disco::Recommender.new(factors: 20, top_items: true)
+    recommender.fit(data)
+    top_items = recommender.top_items
+    assert_equal top_items, recommender.user_recs("unknown")
+
+    recommender = Marshal.load(Marshal.dump(recommender))
+    assert_equal top_items, recommender.top_items
+    assert_equal top_items, recommender.user_recs("unknown")
+  end
+
+  def test_top_items_not_computed
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data.first(5))
+    error = assert_raises do
+      recommender.top_items
+    end
+    assert_equal "top_items not computed", error.message
+  end
+
   def test_ids
     data = [
       {user_id: 1, item_id: "A"},

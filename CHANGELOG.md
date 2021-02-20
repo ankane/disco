@@ -1,5 +1,6 @@
 ## 0.2.5 (unreleased)
 
+- Added `top_items` method
 - Added `optimize_similar_users` method
 - Added support for Faiss for `optimize_item_recs` and `optimize_similar_users` methods
 - Added `rmse` method
