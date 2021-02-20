@@ -67,8 +67,9 @@ module Disco
       @user_factors = model.p_factors(format: :numo)
       @item_factors = model.q_factors(format: :numo)
 
-      @user_index = nil
-      @item_index = nil
+      @user_recs_index = nil
+      @similar_users_index = nil
+      @similar_items_index = nil
     end
 
     # generates a prediction even if a user has already rated the item
