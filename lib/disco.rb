@@ -9,6 +9,7 @@ require "net/http"
 
 # modules
 require "disco/data"
+require "disco/metrics"
 require "disco/recommender"
 require "disco/version"
 
