@@ -86,18 +86,18 @@ class OptimizeTest < Minitest::Test
     assert_in_delta 0.9972, recs.first[:score], 0.01
   end
 
+  # flaky with count: 5 (likely due to ANN)
+  # however, count: 10 seems to match exactly
   def test_optimize_similar_users_ngt
-    skip "Flaky test"
-
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
 
-    original_recs = recommender.similar_users(1)
+    original_recs = recommender.similar_users(1, count: 10)
 
     recommender.optimize_similar_users(library: "ngt")
 
-    recs = recommender.similar_users(1)
+    recs = recommender.similar_users(1, count: 10)
 
     assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
     original_recs.zip(recs).each do |exp, act|
