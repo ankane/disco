@@ -135,22 +135,6 @@ module Disco
       end
     end
 
-    def optimize_user_recs
-      check_fit
-      @user_recs_index = create_index(item_factors, library: "faiss")
-    end
-
-    def optimize_similar_items(library: nil)
-      check_fit
-      @similar_items_index = create_index(item_norms, library: library)
-    end
-    alias_method :optimize_item_recs, :optimize_similar_items
-
-    def optimize_similar_users(library: nil)
-      check_fit
-      @similar_users_index = create_index(user_norms, library: library)
-    end
-
     def similar_items(item_id, count: 5)
       check_fit
       similar(item_id, @item_map, item_norms, count, @similar_items_index)
@@ -186,6 +170,22 @@ module Disco
       else
         @item_factors
       end
+    end
+
+    def optimize_user_recs
+      check_fit
+      @user_recs_index = create_index(item_factors, library: "faiss")
+    end
+
+    def optimize_similar_items(library: nil)
+      check_fit
+      @similar_items_index = create_index(item_norms, library: library)
+    end
+    alias_method :optimize_item_recs, :optimize_similar_items
+
+    def optimize_similar_users(library: nil)
+      check_fit
+      @similar_users_index = create_index(user_norms, library: library)
     end
 
     private
