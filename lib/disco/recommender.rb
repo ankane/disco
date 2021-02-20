@@ -153,24 +153,24 @@ module Disco
 
     def optimize_similar_items(library: nil)
       check_fit
-      @similar_items_index = create_index(:item, library: library)
+      @similar_items_index = create_index(item_norms, library: library)
     end
     alias_method :optimize_item_recs, :optimize_similar_items
 
     def optimize_similar_users(library: nil)
       check_fit
-      @similar_users_index = create_index(:user, library: library)
+      @similar_users_index = create_index(user_norms, library: library)
     end
 
     def similar_items(item_id, count: 5)
       check_fit
-      similar(item_id, @item_map, @item_factors, @similar_items_index ? @item_norms : item_norms, count, @similar_items_index)
+      similar(item_id, @item_map, item_norms, count, @similar_items_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
       check_fit
-      similar(user_id, @user_map, @user_factors, @similar_users_index ? @user_norms : user_norms, count, @similar_users_index)
+      similar(user_id, @user_map, user_norms, count, @similar_users_index)
     end
 
     def user_ids
@@ -201,11 +201,9 @@ module Disco
 
     private
 
-    def create_index(key, library:)
+    def create_index(norm_factors, library:)
       # TODO make Faiss the default in 0.3.0
       library ||= defined?(Faiss) && !defined?(Ngt) ? "faiss" : "ngt"
-
-      factors = send("#{key}_factors")
 
       case library
       when "faiss"
@@ -213,17 +211,19 @@ module Disco
 
         # inner product is cosine similarity with normalized vectors
         # https://github.com/facebookresearch/faiss/issues/95
-        index = Faiss::IndexFlatIP.new(factors.shape[1])
-        index.add(factors / send("#{key}_norms").expand_dims(1))
+        index = Faiss::IndexFlatIP.new(norm_factors.shape[1])
+        index.add(norm_factors)
         index
       when "ngt"
         require "ngt"
 
         # could speed up search with normalized cosine
         # https://github.com/yahoojapan/NGT/issues/36
-        index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
-        ids = index.batch_insert(factors)
-        raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
+        #
+        # NGT normalizes so could just pass factors, but keep code simple for now
+        index = Ngt::Index.new(norm_factors.shape[1], distance_type: "Cosine")
+        ids = index.batch_insert(norm_factors)
+        raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != norm_factors.shape[0]
         index
       else
         raise ArgumentError, "Invalid library: #{library}"
@@ -241,25 +241,25 @@ module Disco
     def norms(factors)
       norms = Numo::SFloat::Math.sqrt((factors * factors).sum(axis: 1))
       norms[norms.eq(0)] = 1e-10 # no zeros
-      norms
+      factors / norms.expand_dims(1)
     end
 
-    def similar(id, map, factors, norms, count, index)
+    def similar(id, map, norm_factors, count, index)
       i = map[id]
 
-      if i && factors.shape[0] > 1
+      if i && norm_factors.shape[0] > 1
         if index && count
           if defined?(Faiss) && index.is_a?(Faiss::Index)
-            predictions, ids = index.search(factors[i, true].expand_dims(0) / norms[i], count + 1).map { |v| v.to_a[0] }
+            predictions, ids = index.search(norm_factors[i, true].expand_dims(0), count + 1).map { |v| v.to_a[0] }
           else
-            result = index.search(factors[i, true], size: count + 1)
+            result = index.search(norm_factors[i, true], size: count + 1)
             # ids from batch_insert start at 1 instead of 0
             ids = result.map { |v| v[:id] - 1 }
             # convert cosine distance to cosine similarity
             predictions = result.map { |v| 1 - v[:distance] }
           end
         else
-          predictions = factors.inner(factors[i, true] / norms[i]) / norms
+          predictions = norm_factors.inner(norm_factors[i, true])
           indexes = predictions.sort_index.reverse
           indexes = indexes[0...[count + 1, indexes.size].min] if count
           predictions = predictions[indexes]
