@@ -247,7 +247,7 @@ recommender.fit(data)
 recommender.top_items
 ```
 
-This uses [Wilson score](https://www.evanmiller.org/how-not-to-sort-by-average-rating.html) for explicit feedback (add [wilson_score](https://github.com/instacart/wilson_score) your application’s Gemfile) and item frequency for implicit feedback.
+This uses [Wilson score](https://www.evanmiller.org/how-not-to-sort-by-average-rating.html) for explicit feedback (add [wilson_score](https://github.com/instacart/wilson_score) to your application’s Gemfile) and item frequency for implicit feedback.
 
 ## Data
 
