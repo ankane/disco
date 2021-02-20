@@ -100,7 +100,6 @@ class OptimizeTest < Minitest::Test
     # won't match exactly due to ANN
     matching_ids = original_recs.map { |v| v[:item_id] } & recs.map { |v| v[:item_id] }
     assert_includes 8..10, matching_ids.size
-    assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
     matching_ids.each do |item_id|
       exp = original_recs.find { |v| v[:item_id] == item_id }
       act = recs.find { |v| v[:item_id] == item_id }
