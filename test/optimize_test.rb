@@ -113,7 +113,7 @@ class OptimizeTest < Minitest::Test
   end
 
   def faiss?
-    RUBY_VERSION.to_f >= 2.7
+    true
   end
 
   def windows?
