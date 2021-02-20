@@ -22,4 +22,8 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
+    - uses: actions/cache@v2
+      with:
+        path: ~/.disco
+        key: disco
     - run: bundle exec rake test

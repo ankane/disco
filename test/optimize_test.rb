@@ -103,7 +103,7 @@ class OptimizeTest < Minitest::Test
     original_recs.zip(recs).each do |exp, act|
       assert_in_delta exp[:score], act[:score]
     end
-    assert_equal 5, recs.size
+    assert_equal 10, recs.size
   end
 
   def windows?
