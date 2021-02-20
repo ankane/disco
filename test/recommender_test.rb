@@ -280,7 +280,7 @@ class RecommenderTest < Minitest::Test
   end
 
   def test_optimize_user_recs
-    skip "Faiss not available on Windows" if Gem.win_platform?
+    skip "Faiss not available on Windows" if windows?
 
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
@@ -298,8 +298,8 @@ class RecommenderTest < Minitest::Test
     assert_equal 5, recs.size
   end
 
-  def test_optimize_similar_items
-    skip "NGT not available on Windows" if Gem.win_platform?
+  def test_optimize_item_recs
+    skip "Faiss not available on Windows" if windows?
 
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
@@ -307,7 +307,52 @@ class RecommenderTest < Minitest::Test
 
     original_recs = recommender.item_recs("Star Wars (1977)")
 
-    recommender.optimize_similar_items
+    recommender.optimize_item_recs(library: "faiss")
+
+    recs = recommender.item_recs("Star Wars (1977)")
+    assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
+    original_recs.zip(recs).each do |exp, act|
+      assert_in_delta exp[:score], act[:score]
+    end
+    assert_equal 5, recs.size
+
+    item_ids = recs.map { |r| r[:item_id] }
+    assert_includes item_ids, "Empire Strikes Back, The (1980)"
+    assert_includes item_ids, "Return of the Jedi (1983)"
+
+    assert_in_delta 0.9972, recs.first[:score], 0.01
+  end
+
+  def test_optimize_similar_users
+    skip "Faiss not available on Windows" if windows?
+
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+
+    original_recs = recommender.similar_users(1)
+
+    recommender.optimize_similar_users(library: "faiss")
+
+    recs = recommender.similar_users(1)
+
+    assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
+    original_recs.zip(recs).each do |exp, act|
+      assert_in_delta exp[:score], act[:score]
+    end
+    assert_equal 5, recs.size
+  end
+
+  def test_optimize_item_recs_ngt
+    skip "NGT not available on Windows" if windows?
+
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+
+    original_recs = recommender.item_recs("Star Wars (1977)")
+
+    recommender.optimize_item_recs(library: "ngt")
 
     recs = recommender.item_recs("Star Wars (1977)")
     assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }

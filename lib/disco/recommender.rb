@@ -155,26 +155,26 @@ module Disco
       nil
     end
 
-    def optimize_similar_items
+    def optimize_similar_items(library: nil)
       check_fit
-      @similar_items_index = create_index(@item_factors)
+      @similar_items_index = create_index(:item, library: library)
     end
     alias_method :optimize_item_recs, :optimize_similar_items
 
-    def optimize_similar_users
+    def optimize_similar_users(library: nil)
       check_fit
-      @similar_users_index = create_index(@user_factors)
+      @similar_users_index = create_index(:user, library: library)
     end
 
     def similar_items(item_id, count: 5)
       check_fit
-      similar(item_id, @item_map, @item_factors, @similar_items_index ? nil : item_norms, count, @similar_items_index)
+      similar(item_id, @item_map, @item_factors, @similar_items_index ? @item_norms : item_norms, count, @similar_items_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
       check_fit
-      similar(user_id, @user_map, @user_factors, @similar_users_index ? nil : user_norms, count, @similar_users_index)
+      similar(user_id, @user_map, @user_factors, @similar_users_index ? @user_norms : user_norms, count, @similar_users_index)
     end
 
     def user_ids
@@ -205,15 +205,31 @@ module Disco
 
     private
 
-    def create_index(factors)
-      require "ngt"
+    def create_index(key, library:)
+      # TODO make Faiss the default in 0.3.0
+      library ||= defined?(Faiss) && !defined?(Ngt) ? "faiss" : "ngt"
 
-      # could speed up search with normalized cosine
-      # https://github.com/yahoojapan/NGT/issues/36
-      index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
-      ids = index.batch_insert(factors)
-      raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
-      index
+      factors = send("#{key}_factors")
+
+      case library
+      when "faiss"
+        require "faiss"
+
+        index = Faiss::IndexFlatIP.new(factors.shape[1])
+        index.add(factors / send("#{key}_norms").expand_dims(1))
+        index
+      when "ngt"
+        require "ngt"
+
+        # could speed up search with normalized cosine
+        # https://github.com/yahoojapan/NGT/issues/36
+        index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
+        ids = index.batch_insert(factors)
+        raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
+        index
+      else
+        raise ArgumentError, "Invalid library: #{library}"
+      end
     end
 
     def user_norms
@@ -230,19 +246,28 @@ module Disco
       norms
     end
 
+    # TODO change key to user_id for similar_users in 0.3.0
     def similar(id, map, factors, norms, count, index)
       i = map[id]
       if i
         if index && count
           keys = map.keys
-          result = index.search(factors[i, true], size: count + 1)[1..-1]
-          result.map do |v|
-            {
-              # ids from batch_insert start at 1 instead of 0
-              item_id: keys[v[:id] - 1],
-              # convert cosine distance to cosine similarity
-              score: 1 - v[:distance]
-            }
+
+          if defined?(Faiss) && index.is_a?(Faiss::Index)
+            distances, ids = index.search(factors[i, true].expand_dims(0) / norms[i], count + 1).map { |v| v.to_a[0] }
+            ids.zip(distances).map do |id, distance|
+              {item_id: keys[id], score: distance}
+            end[1..-1]
+          else
+            result = index.search(factors[i, true], size: count + 1)[1..-1]
+            result.map do |v|
+              {
+                # ids from batch_insert start at 1 instead of 0
+                item_id: keys[v[:id] - 1],
+                # convert cosine distance to cosine similarity
+                score: 1 - v[:distance]
+              }
+            end
           end
         else
           # cosine similarity without norms[i]

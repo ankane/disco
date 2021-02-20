@@ -1,6 +1,7 @@
 ## 0.2.5 (unreleased)
 
 - Added `optimize_similar_users` method
+- Added support for Faiss for `optimize_item_recs` and `optimize_similar_users` methods
 
 ## 0.2.4 (2021-02-15)
 
