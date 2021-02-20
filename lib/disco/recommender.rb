@@ -96,7 +96,6 @@ module Disco
 
       if u
         rated = item_ids ? {} : @rated[u]
-        max_count = count + rated.size
 
         if item_ids
           ids = Numo::NArray.cast(item_ids.map { |i| @item_map[i] }.compact)
@@ -104,16 +103,16 @@ module Disco
 
           predictions = @item_factors[ids, true].inner(@user_factors[u, true])
           indexes = predictions.sort_index.reverse
-          indexes = indexes[0...[max_count, indexes.size].min] if count
+          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
           predictions = predictions[indexes]
           ids = ids[indexes]
-        elsif @user_recs_index
-          predictions, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), max_count).map { |v| v[0, true] }
+        elsif @user_recs_index && count
+          predictions, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + rated.size).map { |v| v[0, true] }
         else
           predictions = @item_factors.inner(@user_factors[u, true])
           # TODO make sure reverse isn't hurting performance
           indexes = predictions.sort_index.reverse
-          indexes = indexes[0...[max_count, indexes.size].min] if count
+          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
           predictions = predictions[indexes]
           ids = indexes
         end
@@ -249,38 +248,31 @@ module Disco
       i = map[id]
 
       if i && factors.shape[0] > 1
-        # TODO use user_id for similar_users in 0.3.0
-        key = :item_id
-
-        keys = map.keys
-
         if index && count
           if defined?(Faiss) && index.is_a?(Faiss::Index)
-            distances, ids = index.search(factors[i, true].expand_dims(0) / norms[i], count + 1).map { |v| v.to_a[0] }
-            ids.zip(distances).map do |id, distance|
-              {key => keys[id], score: distance}
-            end[1..-1]
+            predictions, ids = index.search(factors[i, true].expand_dims(0) / norms[i], count + 1).map { |v| v.to_a[0] }
           else
-            result = index.search(factors[i, true], size: count + 1)[1..-1]
-            result.map do |v|
-              {
-                # ids from batch_insert start at 1 instead of 0
-                key => keys[v[:id] - 1],
-                # convert cosine distance to cosine similarity
-                score: 1 - v[:distance]
-              }
-            end
+            result = index.search(factors[i, true], size: count + 1)
+            # ids from batch_insert start at 1 instead of 0
+            ids = result.map { |v| v[:id] - 1 }
+            # convert cosine distance to cosine similarity
+            predictions = result.map { |v| 1 - v[:distance] }
           end
         else
           predictions = factors.inner(factors[i, true] / norms[i]) / norms
-          indexes = predictions.sort_index
-          indexes = indexes[(-count - 1)..-2] if count
-          indexes = indexes.reverse
-          scores = predictions[indexes]
+          indexes = predictions.sort_index.reverse
+          indexes = indexes[0...[count + 1, indexes.size].min] if count
+          predictions = predictions[indexes]
+          ids = indexes
+        end
 
-          indexes.size.times.map do |i|
-            {key => keys[indexes[i]], score: scores[i]}
-          end
+        keys = map.keys
+
+        # TODO use user_id for similar_users in 0.3.0
+        key = :item_id
+
+        (1...ids.size).map do |i|
+          {key => keys[ids[i]], score: predictions[i]}
         end
       else
         []
