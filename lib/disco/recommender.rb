@@ -137,18 +137,7 @@ module Disco
 
     def optimize_user_recs
       check_fit
-
-      require "faiss"
-
-      # https://github.com/facebookresearch/faiss/wiki/Faiss-indexes
-      # TODO use non-exact index
-      @user_recs_index = Faiss::IndexFlatIP.new(item_factors.shape[1])
-
-      # ids are from 0...total
-      # https://github.com/facebookresearch/faiss/blob/96b740abedffc8f67389f29c2a180913941534c6/faiss/Index.h#L89
-      @user_recs_index.add(item_factors)
-
-      nil
+      @user_recs_index = create_index(item_factors, library: "faiss")
     end
 
     def optimize_similar_items(library: nil)
@@ -201,7 +190,8 @@ module Disco
 
     private
 
-    def create_index(norm_factors, library:)
+    # factors should already be normalized for similar users/items
+    def create_index(factors, library:)
       # TODO make Faiss the default in 0.3.0
       library ||= defined?(Faiss) && !defined?(Ngt) ? "faiss" : "ngt"
 
@@ -211,8 +201,15 @@ module Disco
 
         # inner product is cosine similarity with normalized vectors
         # https://github.com/facebookresearch/faiss/issues/95
-        index = Faiss::IndexFlatIP.new(norm_factors.shape[1])
-        index.add(norm_factors)
+        #
+        # TODO use non-exact index
+        # https://github.com/facebookresearch/faiss/wiki/Faiss-indexes
+        index = Faiss::IndexFlatIP.new(factors.shape[1])
+
+        # ids are from 0...total
+        # https://github.com/facebookresearch/faiss/blob/96b740abedffc8f67389f29c2a180913941534c6/faiss/Index.h#L89
+        index.add(factors)
+
         index
       when "ngt"
         require "ngt"
@@ -221,9 +218,9 @@ module Disco
         # https://github.com/yahoojapan/NGT/issues/36
         #
         # NGT normalizes so could just pass factors, but keep code simple for now
-        index = Ngt::Index.new(norm_factors.shape[1], distance_type: "Cosine")
-        ids = index.batch_insert(norm_factors)
-        raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != norm_factors.shape[0]
+        index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
+        ids = index.batch_insert(factors)
+        raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
         index
       else
         raise ArgumentError, "Invalid library: #{library}"
