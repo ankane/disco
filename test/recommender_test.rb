@@ -279,7 +279,7 @@ class RecommenderTest < Minitest::Test
     assert_equal ["user_id", "item_id", "rating"], data.vectors.to_a
   end
 
-  def test_optimize_similar_users
+  def test_optimize_user_recs
     skip "Faiss not available on Windows" if Gem.win_platform?
 
     data = Disco.load_movielens
