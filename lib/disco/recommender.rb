@@ -95,13 +95,20 @@ module Disco
       u = @user_map[user_id]
 
       if u
+        rated = @rated[u]
+        keys = @item_map.keys
+
         if @user_recs_index && count
-          distances, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + @rated[u].size).map { |v| v.to_a[0] }
-          distances.map! { |v| v < @min_rating ? @min_rating : (v > @max_rating ? @max_rating : v) } if @min_rating
-          keys = @item_map.keys
-          ids.zip(distances).reject { |item_id, _| @rated[u][item_id] }.map do |item_id, distance|
-            {item_id: keys[item_id], score: distance}
-          end.first(count)
+          distances, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + @rated[u].size)
+          distances.inplace.clip(@min_rating, @max_rating) if @min_rating
+          result = []
+          ids[0, true].each_with_index do |item_id, i|
+            next if rated[item_id]
+
+            result << {item_id: keys[item_id], score: distances[0, i]}
+            break if result.size == count
+          end
+          result
         else
           predictions = @item_factors.inner(@user_factors[u, true])
 
