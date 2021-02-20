@@ -1,7 +1,7 @@
 require_relative "test_helper"
 
 class ModelTest < Minitest::Test
-  def test_works
+  def test_recommendations
     user = User.create!
     products = Product.create!([{name: "Product A"}, {name: "Product B"}].shuffle)
     user.update_recommended_products([

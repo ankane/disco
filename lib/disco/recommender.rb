@@ -248,9 +248,12 @@ module Disco
       norms
     end
 
-    # TODO change key to user_id for similar_users in 0.3.0
     def similar(id, map, factors, norms, count, index)
       i = map[id]
+
+      # TODO use user_id for similar_users in 0.3.0
+      key = :item_id
+
       if i
         if index && count
           keys = map.keys
@@ -258,14 +261,14 @@ module Disco
           if defined?(Faiss) && index.is_a?(Faiss::Index)
             distances, ids = index.search(factors[i, true].expand_dims(0) / norms[i], count + 1).map { |v| v.to_a[0] }
             ids.zip(distances).map do |id, distance|
-              {item_id: keys[id], score: distance}
+              {key => keys[id], score: distance}
             end[1..-1]
           else
             result = index.search(factors[i, true], size: count + 1)[1..-1]
             result.map do |v|
               {
                 # ids from batch_insert start at 1 instead of 0
-                item_id: keys[v[:id] - 1],
+                key => keys[v[:id] - 1],
                 # convert cosine distance to cosine similarity
                 score: 1 - v[:distance]
               }
@@ -278,7 +281,7 @@ module Disco
 
           predictions =
             map.keys.zip(predictions).map do |item_id, pred|
-              {item_id: item_id, score: pred}
+              {key => item_id, score: pred}
             end
 
           predictions.delete_at(i)
