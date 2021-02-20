@@ -1,4 +1,4 @@
-## 0.2.5 (unreleased)
+## 0.2.5 (2021-02-20)
 
 - Added `top_items` method
 - Added `optimize_similar_users` method
