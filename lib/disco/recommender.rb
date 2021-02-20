@@ -157,24 +157,24 @@ module Disco
 
     def optimize_similar_items
       check_fit
-      @item_index = create_index(@item_factors)
+      @similar_items_index = create_index(@item_factors)
     end
     alias_method :optimize_item_recs, :optimize_similar_items
 
     def optimize_similar_users
       check_fit
-      @user_index = create_index(@user_factors)
+      @similar_users_index = create_index(@user_factors)
     end
 
     def similar_items(item_id, count: 5)
       check_fit
-      similar(item_id, @item_map, @item_factors, @item_index ? nil : item_norms, count, @item_index)
+      similar(item_id, @item_map, @item_factors, @similar_items_index ? nil : item_norms, count, @similar_items_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
       check_fit
-      similar(user_id, @user_map, @user_factors, @user_index ? nil : user_norms, count, @user_index)
+      similar(user_id, @user_map, @user_factors, @similar_users_index ? nil : user_norms, count, @similar_users_index)
     end
 
     def user_ids
