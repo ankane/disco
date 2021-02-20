@@ -97,7 +97,7 @@ module Disco
       result = []
       if u
         rated = item_ids ? {} : @rated[u]
-        keys = @item_map.keys
+        max_count = count + rated.size
 
         if item_ids
           ids = Numo::NArray.cast(item_ids.map { |i| @item_map[i] }.compact)
@@ -105,22 +105,23 @@ module Disco
 
           predictions = @item_factors[ids, true].inner(@user_factors[u, true])
           indexes = predictions.sort_index.reverse
-          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
+          indexes = indexes[0...[max_count, indexes.size].min] if count
           predictions = predictions[indexes]
           ids = ids[indexes]
         elsif @user_recs_index
-          predictions, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + rated.size).map { |v| v[0, true] }
+          predictions, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), max_count).map { |v| v[0, true] }
         else
           predictions = @item_factors.inner(@user_factors[u, true])
           # TODO make sure reverse isn't hurting performance
           indexes = predictions.sort_index.reverse
-          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
+          indexes = indexes[0...[max_count, indexes.size].min] if count
           predictions = predictions[indexes]
           ids = indexes
         end
 
         predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
 
+        keys = @item_map.keys
         ids.each_with_index do |item_id, i|
           next if rated[item_id]
 
