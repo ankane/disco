@@ -44,7 +44,7 @@ recommender.fit([
 ])
 ```
 
-> Use `value` instead of rating for implicit feedback
+> Use `value` instead of `rating` for implicit feedback
 
 Get user-based recommendations - “users like you also liked”
 
