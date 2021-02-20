@@ -251,13 +251,13 @@ module Disco
     def similar(id, map, factors, norms, count, index)
       i = map[id]
 
-      # TODO use user_id for similar_users in 0.3.0
-      key = :item_id
-
       if i
-        if index && count
-          keys = map.keys
+        # TODO use user_id for similar_users in 0.3.0
+        key = :item_id
 
+        keys = map.keys
+
+        if index && count
           if defined?(Faiss) && index.is_a?(Faiss::Index)
             distances, ids = index.search(factors[i, true].expand_dims(0) / norms[i], count + 1).map { |v| v.to_a[0] }
             ids.zip(distances).map do |id, distance|
@@ -278,19 +278,17 @@ module Disco
           # cosine similarity without norms[i]
           # otherwise, denominator would be (norms[i] * norms)
           predictions = factors.inner(factors[i, true]) / norms
+          indexes = predictions.sort_index
+          indexes = indexes[(-count - 1)..-2] if count
+          indexes = indexes.reverse
 
-          predictions =
-            map.keys.zip(predictions).map do |item_id, pred|
-              {key => item_id, score: pred}
-            end
-
-          predictions.delete_at(i)
-          predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
-          predictions = predictions.first(count) if count
           # divide by norms[i] to get cosine similarity
           # only need to do for returned records
-          predictions.each { |pred| pred[:score] /= norms[i] }
-          predictions
+          scores = predictions[indexes] / norms[i]
+
+          indexes.size.times.map do |i|
+            {key => keys[indexes[i]], score: scores[i]}
+          end
         end
       else
         []
