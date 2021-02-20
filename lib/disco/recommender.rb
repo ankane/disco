@@ -251,7 +251,7 @@ module Disco
     def similar(id, map, factors, norms, count, index)
       i = map[id]
 
-      if i
+      if i && factors.shape[0] > 1
         # TODO use user_id for similar_users in 0.3.0
         key = :item_id
 
@@ -275,16 +275,11 @@ module Disco
             end
           end
         else
-          # cosine similarity without norms[i]
-          # otherwise, denominator would be (norms[i] * norms)
-          predictions = factors.inner(factors[i, true]) / norms
+          predictions = factors.inner(factors[i, true] / norms[i]) / norms
           indexes = predictions.sort_index
           indexes = indexes[(-count - 1)..-2] if count
           indexes = indexes.reverse
-
-          # divide by norms[i] to get cosine similarity
-          # only need to do for returned records
-          scores = predictions[indexes] / norms[i]
+          scores = predictions[indexes]
 
           indexes.size.times.map do |i|
             {key => keys[indexes[i]], score: scores[i]}
