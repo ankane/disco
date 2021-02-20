@@ -1,3 +1,7 @@
+## 0.2.5 (unreleased)
+
+- Added `optimize_similar_users` method
+
 ## 0.2.4 (2021-02-15)
 
 - Added `user_ids` and `item_ids` methods

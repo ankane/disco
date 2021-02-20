@@ -279,6 +279,25 @@ class RecommenderTest < Minitest::Test
     assert_equal ["user_id", "item_id", "rating"], data.vectors.to_a
   end
 
+  def test_optimize_similar_users
+    skip "Faiss not available on Windows" if Gem.win_platform?
+
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20)
+    recommender.fit(data)
+
+    original_recs = recommender.user_recs(1)
+
+    recommender.optimize_user_recs
+
+    recs = recommender.user_recs(1)
+    assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
+    original_recs.zip(recs).each do |exp, act|
+      assert_in_delta exp[:score], act[:score]
+    end
+    assert_equal 5, recs.size
+  end
+
   def test_optimize_similar_items
     skip "NGT not available on Windows" if Gem.win_platform?
 

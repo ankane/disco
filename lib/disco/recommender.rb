@@ -95,39 +95,64 @@ module Disco
       u = @user_map[user_id]
 
       if u
-        predictions = @item_factors.inner(@user_factors[u, true])
-
-        predictions =
-          @item_map.keys.zip(predictions).map do |item_id, pred|
-            {item_id: item_id, score: pred}
-          end
-
-        if item_ids
-          idx = item_ids.map { |i| @item_map[i] }.compact
-          predictions = predictions.values_at(*idx)
+        if @user_recs_index && count
+          distances, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + @rated[u].size).map { |v| v.to_a[0] }
+          distances.map! { |v| v < @min_rating ? @min_rating : (v > @max_rating ? @max_rating : v) } if @min_rating
+          keys = @item_map.keys
+          ids.zip(distances).reject { |item_id, _| @rated[u][item_id] }.map do |item_id, distance|
+            {item_id: keys[item_id], score: distance}
+          end.first(count)
         else
-          @rated[u].keys.sort_by { |v| -v }.each do |i|
-            predictions.delete_at(i)
+          predictions = @item_factors.inner(@user_factors[u, true])
+
+          predictions =
+            @item_map.keys.zip(predictions).map do |item_id, pred|
+              {item_id: item_id, score: pred}
+            end
+
+          if item_ids
+            idx = item_ids.map { |i| @item_map[i] }.compact
+            predictions = predictions.values_at(*idx)
+          else
+            @rated[u].keys.sort_by { |v| -v }.each do |i|
+              predictions.delete_at(i)
+            end
           end
-        end
 
-        predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
-        predictions = predictions.first(count) if count && !item_ids
+          predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
+          predictions = predictions.first(count) if count && !item_ids
 
-        # clamp *after* sorting
-        # also, only needed for returned predictions
-        if @min_rating
-          predictions.each do |pred|
-            pred[:score] = pred[:score].clamp(@min_rating, @max_rating)
+          # clamp *after* sorting
+          # also, only needed for returned predictions
+          if @min_rating
+            predictions.each do |pred|
+              pred[:score] = pred[:score].clamp(@min_rating, @max_rating)
+            end
           end
-        end
 
-        predictions
+          predictions
+        end
       else
         # no items if user is unknown
         # TODO maybe most popular items
         []
       end
+    end
+
+    def optimize_user_recs
+      check_fit
+
+      require "faiss"
+
+      # https://github.com/facebookresearch/faiss/wiki/Faiss-indexes
+      # TODO use non-exact index
+      @user_recs_index = Faiss::IndexFlatIP.new(item_factors.shape[1])
+
+      # ids are from 0...total
+      # https://github.com/facebookresearch/faiss/blob/96b740abedffc8f67389f29c2a180913941534c6/faiss/Index.h#L89
+      @user_recs_index.add(item_factors)
+
+      nil
     end
 
     def optimize_similar_items

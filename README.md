@@ -259,7 +259,25 @@ Or a Daru data frame
 Daru::DataFrame.from_csv("ratings.csv")
 ```
 
-## Faster Similarity
+## Faster User-Based Recommendations [master, experimental]
+
+If you have a large number of users/items, you can use an approximate nearest neighbors library like [Faiss](https://github.com/ankane/faiss) to speed up user-based recommendations.
+
+Add this line to your application’s Gemfile:
+
+```ruby
+gem 'faiss'
+```
+
+Speed up user-based recommendations with:
+
+```ruby
+model.optimize_user_recs
+```
+
+This should be called after fitting or loading the model.
+
+## Faster Item-Based Recommendations and Similar Users
 
 If you have a large number of users/items, you can use an approximate nearest neighbors library like [NGT](https://github.com/ankane/ngt) to speed up item-based recommendations and similar users.
 
