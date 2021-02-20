@@ -6,8 +6,6 @@ class OptimizeTest < Minitest::Test
   end
 
   def test_optimize_user_recs
-    skip unless faiss?
-
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
@@ -25,8 +23,6 @@ class OptimizeTest < Minitest::Test
   end
 
   def test_optimize_item_recs
-    skip unless faiss?
-
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
@@ -50,8 +46,6 @@ class OptimizeTest < Minitest::Test
   end
 
   def test_optimize_similar_users
-    skip unless faiss?
-
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
@@ -110,10 +104,6 @@ class OptimizeTest < Minitest::Test
       assert_in_delta exp[:score], act[:score]
     end
     assert_equal 5, recs.size
-  end
-
-  def faiss?
-    true
   end
 
   def windows?
