@@ -94,56 +94,45 @@ module Disco
       check_fit
       u = @user_map[user_id]
 
+      result = []
       if u
-        rated = @rated[u]
+        rated = item_ids ? {} : @rated[u]
         keys = @item_map.keys
 
-        if @user_recs_index && count
-          distances, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + @rated[u].size)
-          distances.inplace.clip(@min_rating, @max_rating) if @min_rating
-          result = []
-          ids[0, true].each_with_index do |item_id, i|
-            next if rated[item_id]
+        if item_ids
+          ids = Numo::NArray.cast(item_ids.map { |i| @item_map[i] }.compact)
+          return [] if ids.size == 0
 
-            result << {item_id: keys[item_id], score: distances[0, i]}
-            break if result.size == count
-          end
-          result
+          predictions = @item_factors[ids, true].inner(@user_factors[u, true])
+          indexes = predictions.sort_index.reverse
+          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
+          predictions = predictions[indexes]
+          ids = ids[indexes]
+        elsif @user_recs_index
+          predictions, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + rated.size).map { |v| v[0, true] }
         else
           predictions = @item_factors.inner(@user_factors[u, true])
+          # TODO make sure reverse isn't hurting performance
+          indexes = predictions.sort_index.reverse
+          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
+          predictions = predictions[indexes]
+          ids = indexes
+        end
 
-          predictions =
-            @item_map.keys.zip(predictions).map do |item_id, pred|
-              {item_id: item_id, score: pred}
-            end
+        predictions.inplace.clip(@min_rating, @max_rating) if @min_rating
 
-          if item_ids
-            idx = item_ids.map { |i| @item_map[i] }.compact
-            predictions = predictions.values_at(*idx)
-          else
-            @rated[u].keys.sort_by { |v| -v }.each do |i|
-              predictions.delete_at(i)
-            end
-          end
+        ids.each_with_index do |item_id, i|
+          next if rated[item_id]
 
-          predictions.sort_by! { |pred| -pred[:score] } # already sorted by id
-          predictions = predictions.first(count) if count && !item_ids
-
-          # clamp *after* sorting
-          # also, only needed for returned predictions
-          if @min_rating
-            predictions.each do |pred|
-              pred[:score] = pred[:score].clamp(@min_rating, @max_rating)
-            end
-          end
-
-          predictions
+          result << {item_id: keys[item_id], score: predictions[i]}
+          break if result.size == count
         end
       else
         # no items if user is unknown
         # TODO maybe most popular items
-        []
       end
+
+      result
     end
 
     def optimize_user_recs
