@@ -259,7 +259,9 @@ Or a Daru data frame
 Daru::DataFrame.from_csv("ratings.csv")
 ```
 
-## Faster User-Based Recommendations [master, experimental]
+## Performance
+
+### User-Based Recommendations [master, experimental]
 
 If you have a large number of users/items, you can use an approximate nearest neighbors library like [Faiss](https://github.com/ankane/faiss) to speed up user-based recommendations.
 
@@ -277,7 +279,7 @@ model.optimize_user_recs
 
 This should be called after fitting or loading the model.
 
-## Faster Item-Based Recommendations and Similar Users
+### Item-Based Recommendations and Similar Users
 
 If you have a large number of users/items, you can use an approximate nearest neighbors library like [NGT](https://github.com/ankane/ngt) to speed up item-based recommendations and similar users.
 
