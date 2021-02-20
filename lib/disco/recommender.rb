@@ -216,11 +216,13 @@ module Disco
 
         # could speed up search with normalized cosine
         # https://github.com/yahoojapan/NGT/issues/36
-        #
-        # NGT normalizes so could just pass factors, but keep code simple for now
         index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
+
+        # NGT normalizes so could call create_index with factors instead of norms
+        # but keep code simple for now
         ids = index.batch_insert(factors)
         raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
+
         index
       else
         raise ArgumentError, "Invalid library: #{library}"
