@@ -215,6 +215,8 @@ module Disco
       when "faiss"
         require "faiss"
 
+        # inner product is cosine similarity with normalized vectors
+        # https://github.com/facebookresearch/faiss/issues/95
         index = Faiss::IndexFlatIP.new(factors.shape[1])
         index.add(factors / send("#{key}_norms").expand_dims(1))
         index
