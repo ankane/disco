@@ -17,7 +17,9 @@ module Disco
 
       check_training_set(train_set)
 
+      # TODO option to set in initializer to avoid pass
       @implicit = !train_set.any? { |v| v[:rating] }
+
       unless @implicit
         check_ratings(train_set)
         @min_rating, @max_rating = train_set.minmax_by { |o| o[:rating] }.map { |o| o[:rating] }
@@ -323,10 +325,10 @@ module Disco
 
     def check_ratings(ratings)
       unless ratings.all? { |r| !r[:rating].nil? }
-        raise ArgumentError, "Missing ratings"
+        raise ArgumentError, "Missing rating"
       end
       unless ratings.all? { |r| r[:rating].is_a?(Numeric) }
-        raise ArgumentError, "Ratings must be numeric"
+        raise ArgumentError, "Rating must be numeric"
       end
     end
 

@@ -274,6 +274,22 @@ class RecommenderTest < Minitest::Test
     assert_equal "Missing item_id", error.message
   end
 
+  def test_missing_rating
+    recommender = Disco::Recommender.new
+    error = assert_raises ArgumentError do
+      recommender.fit([{user_id: 1, item_id: 1, rating: 5}, {user_id: 1, item_id: 2}])
+    end
+    assert_equal "Missing rating", error.message
+  end
+
+  def test_invalid_rating
+    recommender = Disco::Recommender.new
+    error = assert_raises ArgumentError do
+      recommender.fit([{user_id: 1, item_id: 1, rating: "invalid"}])
+    end
+    assert_equal "Rating must be numeric", error.message
+  end
+
   def test_multiple_user_item
     skip # no error for now
 
