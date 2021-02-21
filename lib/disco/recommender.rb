@@ -372,7 +372,10 @@ module Disco
         rated: @rated,
         global_mean: @global_mean,
         user_factors: @user_factors,
-        item_factors: @item_factors
+        item_factors: @item_factors,
+        factors: @factors,
+        epochs: @epochs,
+        verbose: @verbose
       }
 
       unless @implicit
@@ -396,6 +399,9 @@ module Disco
       @global_mean = obj[:global_mean]
       @user_factors = obj[:user_factors]
       @item_factors = obj[:item_factors]
+      @factors = obj[:factors]
+      @epochs = obj[:epochs]
+      @verbose = obj[:verbose]
 
       unless @implicit
         @min_rating = obj[:min_rating]

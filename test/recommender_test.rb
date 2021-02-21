@@ -35,6 +35,9 @@ class RecommenderTest < Minitest::Test
 
     assert recommender.inspect.size < 50
     assert recommender.to_s.size < 50
+
+    # fit after loading
+    recommender.fit(data.first(5))
   end
 
   def test_implicit

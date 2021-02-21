@@ -1,6 +1,7 @@
 ## 0.2.6 (unreleased)
 
 - Improved `inspect` method
+- Fixed error with `fit` after loading
 
 ## 0.2.5 (2021-02-20)
 
