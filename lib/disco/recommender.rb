@@ -27,20 +27,23 @@ module Disco
         end
       end
 
-      update_maps(train_set)
-
       @rated = Hash.new { |hash, key| hash[key] = {} }
       input = []
       value_key = @implicit ? :value : :rating
       train_set.each do |v|
-        u = @user_map[v[:user_id]]
-        i = @item_map[v[:item_id]]
+        # update maps and build matrix in single pass
+        u = (@user_map[v[:user_id]] ||= @user_map.size)
+        i = (@item_map[v[:item_id]] ||= @item_map.size)
         @rated[u][i] = true
 
         # explicit will always have a value due to check_ratings
         input << [u, i, v[value_key] || 1]
       end
       @rated.default = nil
+
+      # much more efficient than checking every value in another pass
+      raise ArgumentError, "Missing user_id" if @user_map.key?(nil)
+      raise ArgumentError, "Missing item_id" if @item_map.key?(nil)
 
       if @top_items
         @item_count = [0] * @item_map.size
@@ -316,17 +319,6 @@ module Disco
       else
         []
       end
-    end
-
-    def update_maps(train_set)
-      train_set.each do |v|
-        @user_map[v[:user_id]] ||= @user_map.size
-        @item_map[v[:item_id]] ||= @item_map.size
-      end
-
-      # much more efficient than checking every value in another pass
-      raise ArgumentError, "Missing user_id" if @user_map.key?(nil)
-      raise ArgumentError, "Missing item_id" if @item_map.key?(nil)
     end
 
     def check_ratings(ratings)
