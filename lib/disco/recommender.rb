@@ -319,13 +319,14 @@ module Disco
     end
 
     def update_maps(train_set)
-      raise ArgumentError, "Missing user_id" if train_set.any? { |v| v[:user_id].nil? }
-      raise ArgumentError, "Missing item_id" if train_set.any? { |v| v[:item_id].nil? }
-
       train_set.each do |v|
         @user_map[v[:user_id]] ||= @user_map.size
         @item_map[v[:item_id]] ||= @item_map.size
       end
+
+      # much more efficient than checking every value in another pass
+      raise ArgumentError, "Missing user_id" if @user_map.key?(nil)
+      raise ArgumentError, "Missing item_id" if @item_map.key?(nil)
     end
 
     def check_ratings(ratings)

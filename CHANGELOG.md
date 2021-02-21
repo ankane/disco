@@ -1,5 +1,6 @@
 ## 0.2.6 (unreleased)
 
+- Improved performance
 - Improved `inspect` method
 - Fixed error with `fit` after loading
 
