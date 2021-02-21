@@ -22,9 +22,10 @@ module Disco
       # but may be confusing if they are all missing and later ones aren't
       @implicit = !train_set.any? { |v| v[:rating] }
 
+      # TODO improve performance
+      # (catch exception instead of checking ahead of time)
       unless @implicit
         check_ratings(train_set)
-        @min_rating, @max_rating = train_set.minmax_by { |o| o[:rating] }.map { |o| o[:rating] }
 
         if validation_set
           check_ratings(validation_set)
@@ -48,6 +49,11 @@ module Disco
       # much more efficient than checking every value in another pass
       raise ArgumentError, "Missing user_id" if @user_map.key?(nil)
       raise ArgumentError, "Missing item_id" if @item_map.key?(nil)
+
+      # TODO improve performance
+      unless @implicit
+        @min_rating, @max_rating = train_set.minmax_by { |o| o[:rating] }.map { |o| o[:rating] }
+      end
 
       if @top_items
         @item_count = [0] * @item_map.size
