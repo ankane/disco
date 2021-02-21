@@ -1,3 +1,7 @@
+## 0.2.6 (unreleased)
+
+- Improved `inspect` method
+
 ## 0.2.5 (2021-02-20)
 
 - Added `top_items` method

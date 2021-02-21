@@ -224,6 +224,10 @@ module Disco
       @similar_users_index = create_index(normalized_user_factors, library: library)
     end
 
+    def inspect
+      to_s # for now
+    end
+
     private
 
     # factors should already be normalized for similar users/items

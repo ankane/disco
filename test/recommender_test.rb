@@ -32,6 +32,9 @@ class RecommenderTest < Minitest::Test
     assert_equal (1664 - data.select { |v| v[:user_id] == 1 }.map { |v| v[:item_id] }.uniq.size), recommender.user_recs(1, count: nil).size
     assert_equal 1663, recommender.item_recs("Star Wars (1977)", count: nil).size
     assert_equal 942, recommender.similar_users(1, count: nil).size
+
+    assert recommender.inspect.size < 50
+    assert recommender.to_s.size < 50
   end
 
   def test_implicit
