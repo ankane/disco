@@ -78,8 +78,8 @@ module Disco
       @user_factors = model.p_factors(format: :numo)
       @item_factors = model.q_factors(format: :numo)
 
-      @user_norms = nil
-      @item_norms = nil
+      @normalized_user_factors = nil
+      @normalized_item_factors = nil
 
       @user_recs_index = nil
       @similar_users_index = nil
@@ -152,13 +152,13 @@ module Disco
 
     def similar_items(item_id, count: 5)
       check_fit
-      similar(item_id, @item_map, item_norms, count, @similar_items_index)
+      similar(item_id, @item_map, normalized_item_factors, count, @similar_items_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
       check_fit
-      similar(user_id, @user_map, user_norms, count, @similar_users_index)
+      similar(user_id, @user_map, normalized_user_factors, count, @similar_users_index)
     end
 
     def top_items(count: 5)
@@ -215,13 +215,13 @@ module Disco
 
     def optimize_similar_items(library: nil)
       check_fit
-      @similar_items_index = create_index(item_norms, library: library)
+      @similar_items_index = create_index(normalized_item_factors, library: library)
     end
     alias_method :optimize_item_recs, :optimize_similar_items
 
     def optimize_similar_users(library: nil)
       check_fit
-      @similar_users_index = create_index(user_norms, library: library)
+      @similar_users_index = create_index(normalized_user_factors, library: library)
     end
 
     private
@@ -254,7 +254,7 @@ module Disco
         # https://github.com/yahoojapan/NGT/issues/36
         index = Ngt::Index.new(factors.shape[1], distance_type: "Cosine")
 
-        # NGT normalizes so could call create_index with factors instead of norms
+        # NGT normalizes so could call create_index without normalized factors
         # but keep code simple for now
         ids = index.batch_insert(factors)
         raise "Unexpected ids. Please report a bug." if ids.first != 1 || ids.last != factors.shape[0]
@@ -265,15 +265,15 @@ module Disco
       end
     end
 
-    def user_norms
-      @user_norms ||= norms(@user_factors)
+    def normalized_user_factors
+      @normalized_user_factors ||= normalize(@user_factors)
     end
 
-    def item_norms
-      @item_norms ||= norms(@item_factors)
+    def normalized_item_factors
+      @normalized_item_factors ||= normalize(@item_factors)
     end
 
-    def norms(factors)
+    def normalize(factors)
       norms = Numo::SFloat::Math.sqrt((factors * factors).sum(axis: 1))
       norms[norms.eq(0)] = 1e-10 # no zeros
       factors / norms.expand_dims(1)
