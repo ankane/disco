@@ -18,6 +18,8 @@ module Disco
       check_training_set(train_set)
 
       # TODO option to set in initializer to avoid pass
+      # could also just check first value
+      # but may be confusing if first value is missing
       @implicit = !train_set.any? { |v| v[:rating] }
 
       unless @implicit
