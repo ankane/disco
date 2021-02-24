@@ -1,4 +1,4 @@
-## 0.2.6 (unreleased)
+## 0.2.6 (2021-02-24)
 
 - Improved performance
 - Improved `inspect` method
