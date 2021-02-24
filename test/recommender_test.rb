@@ -100,10 +100,10 @@ class RecommenderTest < Minitest::Test
   end
 
   def test_item_recs_same_score
-    data = [{user_id: 952, item_id: 2057}, {user_id: 952, item_id: 2060}, {user_id: 953, item_id: 2063}]
+    data = [{user_id: 1, item_id: "A"}, {user_id: 1, item_id: "B"}, {user_id: 2, item_id: "C"}]
     recommender = Disco::Recommender.new(factors: 50)
     recommender.fit(data)
-    assert_equal [2060, 2063], recommender.item_recs(2057).map { |r| r[:item_id] }
+    assert_equal ["B", "C"], recommender.item_recs("A").map { |r| r[:item_id] }
   end
 
   def test_top_items_explicit
