@@ -2,6 +2,7 @@
 
 - Improved performance
 - Improved `inspect` method
+- Fixed issue with `similar_users` and `item_recs` returning the original user/item
 - Fixed error with `fit` after loading
 
 ## 0.2.5 (2021-02-20)

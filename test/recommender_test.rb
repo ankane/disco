@@ -99,6 +99,13 @@ class RecommenderTest < Minitest::Test
     assert_equal ["A", "B"], recommender.user_recs(2).map { |r| r[:item_id] }.sort
   end
 
+  def test_item_recs_same_score
+    data = [{user_id: 952, item_id: 2057}, {user_id: 952, item_id: 2060}, {user_id: 953, item_id: 2063}]
+    recommender = Disco::Recommender.new(factors: 50)
+    recommender.fit(data)
+    assert_equal [2060, 2063], recommender.item_recs(2057).map { |r| r[:item_id] }
+  end
+
   def test_top_items_explicit
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20, top_items: true)

@@ -323,9 +323,15 @@ module Disco
         # TODO use user_id for similar_users in 0.3.0
         key = :item_id
 
-        (1...ids.size).map do |i|
-          {key => keys[ids[i]], score: predictions[i]}
+        result = []
+        # items can have the same score
+        # so original item may not be at index 0
+        ids.each_with_index do |id, j|
+          next if id == i
+
+          result << {key => keys[id], score: predictions[j]}
         end
+        result
       else
         []
       end
