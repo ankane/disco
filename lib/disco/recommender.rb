@@ -255,8 +255,9 @@ module Disco
         # inner product is cosine similarity with normalized vectors
         # https://github.com/facebookresearch/faiss/issues/95
         #
-        # TODO use non-exact index
+        # TODO use non-exact index in 0.3.0
         # https://github.com/facebookresearch/faiss/wiki/Faiss-indexes
+        # index = Faiss::IndexHNSWFlat.new(factors.shape[1], 32, :inner_product)
         index = Faiss::IndexFlatIP.new(factors.shape[1])
 
         # ids are from 0...total
