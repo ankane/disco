@@ -282,22 +282,22 @@ gem 'faiss'
 Speed up the `user_recs` method with:
 
 ```ruby
-model.optimize_user_recs
+recommender.optimize_user_recs
 ```
 
 Speed up the `item_recs` method with:
 
 ```ruby
-model.optimize_item_recs
+recommender.optimize_item_recs
 ```
 
 Speed up the `similar_users` method with:
 
 ```ruby
-model.optimize_similar_users
+recommender.optimize_similar_users
 ```
 
-This should be called after fitting or loading the model.
+This should be called after fitting or loading the recommender.
 
 ## Reference
 
