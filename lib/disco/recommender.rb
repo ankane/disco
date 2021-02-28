@@ -179,19 +179,22 @@ module Disco
       raise "top_items not computed" unless @top_items
 
       if @implicit
-        scores = @item_count
+        scores = Numo::UInt64.cast(@item_count)
       else
         require "wilson_score"
 
+        # TODO use Numo instead of wilson_score gem for best performance
         range = @min_rating..@max_rating
-        scores = @item_sum.zip(@item_count).map { |s, c| WilsonScore.rating_lower_bound(s / c, c, range) }
+        scores = Numo::DFloat.cast(@item_sum.zip(@item_count).map { |s, c| WilsonScore.rating_lower_bound(s / c, c, range) })
       end
 
-      scores = scores.map.with_index.sort_by { |s, _| -s }
-      scores = scores.first(count) if count
-      item_ids = item_ids()
-      scores.map do |s, i|
-        {item_id: item_ids[i], score: s}
+      indexes = scores.sort_index.reverse
+      indexes = indexes[0...[count, indexes.size].min] if count
+      scores = scores[indexes]
+
+      keys = @item_map.keys
+      indexes.size.times.map do |i|
+        {item_id: keys[indexes[i]], score: scores[i]}
       end
     end
 
