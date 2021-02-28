@@ -183,9 +183,19 @@ module Disco
       else
         require "wilson_score"
 
-        # TODO use Numo instead of wilson_score gem for best performance
         range = @min_rating..@max_rating
         scores = Numo::DFloat.cast(@item_sum.zip(@item_count).map { |s, c| WilsonScore.rating_lower_bound(s / c, c, range) })
+
+        # TODO uncomment in 0.3.0
+        # wilson score with continuity correction
+        # https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval_with_continuity_correction
+        # z = 1.96 # 95% confidence
+        # range = @max_rating - @min_rating
+        # n = Numo::DFloat.cast(@item_count)
+        # phat = (Numo::DFloat.cast(@item_sum) - (@min_rating * n)) / range / n
+        # phat = (phat - (1 / 2 * n)).clip(0, 100) # continuity correction
+        # scores = (phat + z**2 / (2 * n) - z * Numo::DFloat::Math.sqrt((phat * (1 - phat) + z**2 / (4 * n)) / n)) / (1 + z**2 / n)
+        # scores = scores * range + @min_rating
       end
 
       indexes = scores.sort_index.reverse
