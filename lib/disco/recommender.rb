@@ -138,8 +138,7 @@ module Disco
           predictions, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + rated.size).map { |v| v[0, true] }
         else
           predictions = @item_factors.inner(@user_factors[u, true])
-          # TODO make sure reverse isn't hurting performance
-          indexes = predictions.sort_index.reverse
+          indexes = predictions.sort_index.reverse # reverse just creates view
           indexes = indexes[0...[count + rated.size, indexes.size].min] if count
           predictions = predictions[indexes]
           ids = indexes
