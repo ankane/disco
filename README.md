@@ -201,7 +201,7 @@ bin = File.binread("recommender.bin")
 recommender = Marshal.load(bin)
 ```
 
-Alternatively, you can store only the factors and use a library like [Neighbor](https://github.com/ankane/neighbor)
+Alternatively, you can store only the factors and use a library like [Neighbor](https://github.com/ankane/neighbor). See the [examples](https://github.com/ankane/neighbor/tree/master/examples).
 
 ## Algorithms
 
