@@ -7,20 +7,22 @@ ActiveRecord::Migration.verbose = ENV["VERBOSE"]
 # migrations
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
-ActiveRecord::Migration.create_table :users do |t|
-  t.string :name
-end
+ActiveRecord::Schema.define do
+  create_table :users do |t|
+    t.string :name
+  end
 
-ActiveRecord::Migration.create_table :products do |t|
-  t.string :name
-end
+  create_table :products do |t|
+    t.string :name
+  end
 
-ActiveRecord::Migration.create_table :disco_recommendations do |t|
-  t.references :subject, polymorphic: true
-  t.references :item, polymorphic: true
-  t.float :score
-  t.string :context
-  t.timestamps
+  create_table :disco_recommendations do |t|
+    t.references :subject, polymorphic: true
+    t.references :item, polymorphic: true
+    t.float :score
+    t.string :context
+    t.timestamps
+  end
 end
 
 class User < ActiveRecord::Base
