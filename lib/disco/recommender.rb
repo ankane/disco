@@ -22,6 +22,10 @@ module Disco
       # but may be confusing if they are all missing and later ones aren't
       @implicit = !train_set.any? { |v| v[:rating] }
 
+      if train_set.any? { |v| v[:value] }
+        warn "[disco] WARNING: Passing `:value` with implicit feedback has no effect on recommendations and can be removed. Earlier versions of the library incorrectly stated this was used."
+      end
+
       # TODO improve performance
       # (catch exception instead of checking ahead of time)
       unless @implicit
@@ -34,7 +38,6 @@ module Disco
 
       @rated = Hash.new { |hash, key| hash[key] = {} }
       input = []
-      value_key = @implicit ? :value : :rating
       train_set.each do |v|
         # update maps and build matrix in single pass
         u = (@user_map[v[:user_id]] ||= @user_map.size)
@@ -42,7 +45,7 @@ module Disco
         @rated[u][i] = true
 
         # explicit will always have a value due to check_ratings
-        input << [u, i, v[value_key] || 1]
+        input << [u, i, @implicit ? 1 : v[:rating]]
       end
       @rated.default = nil
 
@@ -61,7 +64,7 @@ module Disco
         train_set.each do |v|
           i = @item_map[v[:item_id]]
           @item_count[i] += 1
-          @item_sum[i] += (v[value_key] || 1)
+          @item_sum[i] += (@implicit ? 1 : v[:rating])
         end
       end
 
@@ -76,7 +79,7 @@ module Disco
           u ||= -1
           i ||= -1
 
-          eval_set << [u, i, v[value_key] || 1]
+          eval_set << [u, i, @implicit ? 1 : v[:rating]]
         end
       end
 

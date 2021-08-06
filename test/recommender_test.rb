@@ -75,8 +75,8 @@ class RecommenderTest < Minitest::Test
 
     recommender = Disco::Recommender.new
     recommender.fit([
-      {user_id: 1, item_id: 1, value: 1},
-      {user_id: 2, item_id: 1, value: 2}
+      {user_id: 1, item_id: 1},
+      {user_id: 2, item_id: 1}
     ])
     recommender.user_recs(1)
     recommender.item_recs(1)
@@ -311,6 +311,14 @@ class RecommenderTest < Minitest::Test
       recommender.fit([{user_id: 1, item_id: 1, rating: 5}], validation_set: [{user_id: 1, item_id: 1, rating: "invalid"}])
     end
     assert_equal "Rating must be numeric", error.message
+  end
+
+  def test_value
+    recommender = Disco::Recommender.new
+    _, stderr = capture_io do
+      recommender.fit([{user_id: 1, item_id: 1, value: 5}])
+    end
+    assert_match "[disco] WARNING: Passing `:value` with implicit feedback has no effect on recommendations", stderr
   end
 
   def test_multiple_user_item

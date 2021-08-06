@@ -1,3 +1,7 @@
+## 0.2.7 (unreleased)
+
+- Added warning for `value`
+
 ## 0.2.6 (2021-02-24)
 
 - Improved performance

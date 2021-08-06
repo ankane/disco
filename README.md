@@ -35,16 +35,14 @@ recommender.fit([
 
 > IDs can be integers, strings, or any other data type
 
-If users don’t rate items directly (for instance, they’re purchasing items or reading posts), this is known as implicit feedback. Leave out the rating, or use a value like number of purchases, number of page views, or time spent on page:
+If users don’t rate items directly (for instance, they’re purchasing items or reading posts), this is known as implicit feedback. Leave out the rating.
 
 ```ruby
 recommender.fit([
-  {user_id: 1, item_id: 1, value: 1},
-  {user_id: 2, item_id: 1, value: 1}
+  {user_id: 1, item_id: 1},
+  {user_id: 2, item_id: 1}
 ])
 ```
-
-> Use `value` instead of `rating` for implicit feedback
 
 Get user-based recommendations - “users like you also liked”
 
@@ -106,11 +104,10 @@ views = Ahoy::Event.
   count
 
 data =
-  views.map do |(user_id, post_id), count|
+  views.map do |(user_id, post_id), _|
     {
       user_id: user_id,
-      item_id: post_id,
-      value: count
+      item_id: post_id
     }
   end
 ```
@@ -335,6 +332,28 @@ Thanks to:
 - [LIBMF](https://github.com/cjlin1/libmf) for providing high performance matrix factorization
 - [Implicit](https://github.com/benfred/implicit/) for serving as an initial reference for user and item similarity
 - [@dasch](https://github.com/dasch) for the gem name
+
+## Upgrading
+
+### 0.2.7
+
+There’s now a warning when passing `:value` with implicit feedback, as this has no effect on recommendations and can be removed. Earlier versions of the library incorrectly stated this was used.
+
+```ruby
+recommender.fit([
+  {user_id: 1, item_id: 1, value: 1},
+  {user_id: 2, item_id: 1, value: 3}
+])
+```
+
+to:
+
+```ruby
+recommender.fit([
+  {user_id: 1, item_id: 1},
+  {user_id: 2, item_id: 1}
+])
+```
 
 ## History
 
