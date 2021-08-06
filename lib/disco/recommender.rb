@@ -22,7 +22,7 @@ module Disco
       # but may be confusing if they are all missing and later ones aren't
       @implicit = !train_set.any? { |v| v[:rating] }
 
-      if train_set.any? { |v| v[:value] }
+      if @implicit && train_set.any? { |v| v[:value] }
         warn "[disco] WARNING: Passing `:value` with implicit feedback has no effect on recommendations and can be removed. Earlier versions of the library incorrectly stated this was used."
       end
 
