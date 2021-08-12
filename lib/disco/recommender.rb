@@ -195,7 +195,7 @@ module Disco
         # range = @max_rating - @min_rating
         # n = Numo::DFloat.cast(@item_count)
         # phat = (Numo::DFloat.cast(@item_sum) - (@min_rating * n)) / range / n
-        # phat = (phat - (1 / 2 * n)).clip(0, 100) # continuity correction
+        # phat = (phat - (1 / (2 * n))).clip(0, 100) # continuity correction
         # scores = (phat + z**2 / (2 * n) - z * Numo::DFloat::Math.sqrt((phat * (1 - phat) + z**2 / (4 * n)) / n)) / (1 + z**2 / n)
         # scores = scores * range + @min_rating
       end
