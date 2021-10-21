@@ -97,11 +97,7 @@ recommender.item_recs("Star Wars (1977)")
 [Ahoy](https://github.com/ankane/ahoy) is a great source for implicit feedback
 
 ```ruby
-views = Ahoy::Event.
-  where(name: "Viewed post").
-  group(:user_id).
-  group("properties->>'post_id'"). # postgres syntax
-  count
+views = Ahoy::Event.where(name: "Viewed post").group(:user_id).group_prop(:post_id).count
 
 data =
   views.map do |(user_id, post_id), _|
