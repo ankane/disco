@@ -44,6 +44,8 @@ recommender.fit([
 ])
 ```
 
+> Each `user_id`/`item_id` combination should only appear once
+
 Get user-based recommendations - “users like you also liked”
 
 ```ruby
