@@ -4,7 +4,7 @@ gemspec
 
 gem "rake"
 gem "minitest", ">= 5"
-gem "activerecord"
+gem "activerecord", "~> 7.0.0"
 gem "sqlite3"
 gem "daru"
 gem "rover-df"
