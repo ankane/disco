@@ -141,6 +141,18 @@ class RecommenderTest < Minitest::Test
     assert_equal "top_items not computed", error.message
   end
 
+  def test_top_items_no_range
+    data = [
+      {user_id: 1, item_id: "A", rating: 5},
+      {user_id: 1, item_id: "B", rating: 5},
+      {user_id: 2, item_id: "B", rating: 5}
+    ]
+    recommender = Disco::Recommender.new(factors: 20, top_items: true)
+    recommender.fit(data)
+    # TODO fix
+    # recommender.top_items
+  end
+
   def test_ids
     data = [
       {user_id: 1, item_id: "A"},
