@@ -185,7 +185,13 @@ module Disco
       else
         require "wilson_score"
 
-        range = @min_rating..@max_rating
+        range =
+          if @min_rating == @max_rating
+            # TODO remove temp fix
+            (@min_rating - 1)..@max_rating
+          else
+            @min_rating..@max_rating
+          end
         scores = Numo::DFloat.cast(@item_sum.zip(@item_count).map { |s, c| WilsonScore.rating_lower_bound(s / c, c, range) })
 
         # TODO uncomment in 0.3.0

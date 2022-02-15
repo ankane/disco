@@ -1,3 +1,7 @@
+## 0.2.8 (unreleased)
+
+- Fixed error with `top_items` with all same rating
+
 ## 0.2.7 (2021-08-06)
 
 - Added warning for `value`

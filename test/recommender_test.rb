@@ -149,8 +149,7 @@ class RecommenderTest < Minitest::Test
     ]
     recommender = Disco::Recommender.new(factors: 20, top_items: true)
     recommender.fit(data)
-    # TODO fix
-    # recommender.top_items
+    assert_equal ["B", "A"], recommender.top_items.map { |r| r[:item_id] }
   end
 
   def test_ids
