@@ -1,4 +1,4 @@
-## 0.2.8 (unreleased)
+## 0.2.8 (2022-03-13)
 
 - Fixed error with `top_items` with all same rating
 
