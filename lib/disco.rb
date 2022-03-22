@@ -2,11 +2,6 @@
 require "libmf"
 require "numo/narray"
 
-# stdlib
-require "csv"
-require "fileutils"
-require "net/http"
-
 # modules
 require "disco/data"
 require "disco/metrics"

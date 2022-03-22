@@ -1,3 +1,7 @@
+## 0.2.9 (unreleased)
+
+- Fixed error with `load_movielens`
+
 ## 0.2.8 (2022-03-13)
 
 - Fixed error with `top_items` with all same rating
