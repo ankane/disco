@@ -10,10 +10,9 @@ module Disco
 
         has_many :"recommended_#{name}", -> { where("disco_recommendations.context = ?", name).order("disco_recommendations.score DESC") }, through: :recommendations, source: :item, source_type: class_name
 
-        # TODO use fetch for item_id and score in 0.3.0
         define_method("update_recommended_#{name}") do |items|
           now = Time.now
-          items = items.map { |item| {subject_type: model_name.name, subject_id: id, item_type: class_name, item_id: item[:item_id], context: name, score: item[:score], created_at: now, updated_at: now} }
+          items = items.map { |item| {subject_type: model_name.name, subject_id: id, item_type: class_name, item_id: item.fetch(:item_id), context: name, score: item.fetch(:score), created_at: now, updated_at: now} }
 
           self.class.transaction do
             recommendations.where(context: name).delete_all
