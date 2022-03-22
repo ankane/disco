@@ -108,7 +108,7 @@ class RecommenderTest < Minitest::Test
 
   def test_similar_users
     data = Disco.load_movielens
-    recommender = Disco::Recommender.new(factors: 20, verbose: false)
+    recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
 
     refute_empty recommender.similar_users(data.first[:user_id])
