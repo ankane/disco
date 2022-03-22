@@ -271,7 +271,7 @@ If you have a large number of users or items, you can use an approximate nearest
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'faiss'
+gem "faiss"
 ```
 
 Speed up the `user_recs` method with:
