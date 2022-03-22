@@ -106,6 +106,15 @@ class RecommenderTest < Minitest::Test
     assert_equal ["B", "C"], recommender.item_recs("A").map { |r| r[:item_id] }
   end
 
+  def test_similar_users
+    data = Disco.load_movielens
+    recommender = Disco::Recommender.new(factors: 20, verbose: false)
+    recommender.fit(data)
+
+    refute_empty recommender.similar_users(data.first[:user_id])
+    assert_empty recommender.similar_users("missing")
+  end
+
   def test_top_items_explicit
     data = Disco.load_movielens
     recommender = Disco::Recommender.new(factors: 20, top_items: true)
