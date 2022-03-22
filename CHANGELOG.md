@@ -1,4 +1,4 @@
-## 0.3.0 (unreleased)
+## 0.3.0 (2022-03-22)
 
 - Changed `item_id` to `user_id` for `similar_users`
 - Changed warning to an error when `value` passed to `fit`
