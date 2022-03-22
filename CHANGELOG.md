@@ -1,4 +1,4 @@
-## 0.2.9 (unreleased)
+## 0.2.9 (2022-03-22)
 
 - Fixed error with `load_movielens`
 
