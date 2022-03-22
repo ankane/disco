@@ -13,7 +13,7 @@
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'disco'
+gem "disco"
 ```
 
 ## Getting Started
