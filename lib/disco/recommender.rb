@@ -183,27 +183,20 @@ module Disco
       if @implicit
         scores = Numo::UInt64.cast(@item_count)
       else
-        require "wilson_score"
+        min_rating = @min_rating
 
-        range =
-          if @min_rating == @max_rating
-            # TODO remove temp fix
-            (@min_rating - 1)..@max_rating
-          else
-            @min_rating..@max_rating
-          end
-        scores = Numo::DFloat.cast(@item_sum.zip(@item_count).map { |s, c| WilsonScore.rating_lower_bound(s / c, c, range) })
+        # TODO remove temp fix
+        min_rating -= 1 if @min_rating == @max_rating
 
-        # TODO uncomment in 0.3.0
         # wilson score with continuity correction
         # https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval_with_continuity_correction
-        # z = 1.96 # 95% confidence
-        # range = @max_rating - @min_rating
-        # n = Numo::DFloat.cast(@item_count)
-        # phat = (Numo::DFloat.cast(@item_sum) - (@min_rating * n)) / range / n
-        # phat = (phat - (1 / (2 * n))).clip(0, nil) # continuity correction
-        # scores = (phat + z**2 / (2 * n) - z * Numo::DFloat::Math.sqrt((phat * (1 - phat) + z**2 / (4 * n)) / n)) / (1 + z**2 / n)
-        # scores = scores * range + @min_rating
+        z = 1.96 # 95% confidence
+        range = @max_rating - @min_rating
+        n = Numo::DFloat.cast(@item_count)
+        phat = (Numo::DFloat.cast(@item_sum) - (min_rating * n)) / range / n
+        phat = (phat - (1 / (2 * n))).clip(0, nil) # continuity correction
+        scores = (phat + z**2 / (2 * n) - z * Numo::DFloat::Math.sqrt((phat * (1 - phat) + z**2 / (4 * n)) / n)) / (1 + z**2 / n)
+        scores = scores * range + min_rating
       end
 
       indexes = scores.sort_index.reverse

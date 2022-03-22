@@ -1,5 +1,6 @@
 ## 0.3.0 (unreleased)
 
+- Removed dependency on `wilson_score` gem for `top_items`
 - Dropped support for Ruby < 2.6
 
 ## 0.2.9 (2022-03-22)
