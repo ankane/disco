@@ -1,3 +1,7 @@
+## 0.3.0 (unreleased)
+
+- Dropped support for Ruby < 2.6
+
 ## 0.2.9 (2022-03-22)
 
 - Fixed error with `load_movielens`
