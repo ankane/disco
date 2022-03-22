@@ -259,8 +259,7 @@ module Disco
 
     # factors should already be normalized for similar users/items
     def create_index(factors, library:)
-      # TODO make Faiss the default in 0.3.0
-      library ||= defined?(Faiss) && !defined?(Ngt) ? "faiss" : "ngt"
+      library ||= defined?(Ngt) && !defined?(Faiss) ? "ngt" : "faiss"
 
       case library
       when "faiss"

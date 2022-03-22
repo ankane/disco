@@ -2,6 +2,7 @@
 
 - Changed `item_id` to `user_id` for `similar_users`
 - Changed warning to an error when `value` passed to `fit`
+- Changed to use Faiss over NGT for `optimize_item_recs` and `optimize_similar_users` when both are installed
 - Removed dependency on `wilson_score` gem for `top_items`
 - Dropped support for Ruby < 2.6
 
