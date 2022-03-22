@@ -23,7 +23,7 @@ module Disco
       @implicit = !train_set.any? { |v| v[:rating] }
 
       if @implicit && train_set.any? { |v| v[:value] }
-        warn "[disco] WARNING: Passing `:value` with implicit feedback has no effect on recommendations and can be removed. Earlier versions of the library incorrectly stated this was used."
+        raise ArgumentError, "Passing `:value` with implicit feedback has no effect on recommendations and should be removed. Earlier versions of the library incorrectly stated this was used."
       end
 
       # TODO improve performance

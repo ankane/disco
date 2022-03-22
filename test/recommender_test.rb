@@ -335,10 +335,10 @@ class RecommenderTest < Minitest::Test
 
   def test_value
     recommender = Disco::Recommender.new
-    _, stderr = capture_io do
+    error = assert_raises(ArgumentError) do
       recommender.fit([{user_id: 1, item_id: 1, value: 5}])
     end
-    assert_match "[disco] WARNING: Passing `:value` with implicit feedback has no effect on recommendations", stderr
+    assert_match "Passing `:value` with implicit feedback has no effect on recommendations", error.message
   end
 
   def test_multiple_user_item
