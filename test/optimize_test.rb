@@ -56,7 +56,7 @@ class OptimizeTest < Minitest::Test
 
     recs = recommender.similar_users(1)
 
-    assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
+    assert_equal original_recs.map { |v| v[:user_id] }, recs.map { |v| v[:user_id] }
     original_recs.zip(recs).each do |exp, act|
       assert_in_delta exp[:score], act[:score]
     end
@@ -98,11 +98,11 @@ class OptimizeTest < Minitest::Test
     recs = recommender.similar_users(1, count: 10)
 
     # won't match exactly due to ANN
-    matching_ids = original_recs.map { |v| v[:item_id] } & recs.map { |v| v[:item_id] }
+    matching_ids = original_recs.map { |v| v[:user_id] } & recs.map { |v| v[:user_id] }
     assert_includes 8..10, matching_ids.size
-    matching_ids.each do |item_id|
-      exp = original_recs.find { |v| v[:item_id] == item_id }
-      act = recs.find { |v| v[:item_id] == item_id }
+    matching_ids.each do |user_id|
+      exp = original_recs.find { |v| v[:user_id] == user_id }
+      act = recs.find { |v| v[:user_id] == user_id }
       assert_in_delta exp[:score], act[:score]
     end
     assert_equal 10, recs.size
