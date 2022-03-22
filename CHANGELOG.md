@@ -1,5 +1,6 @@
 ## 0.3.0 (unreleased)
 
+- Changed `item_id` to `user_id` for `similar_users`
 - Removed dependency on `wilson_score` gem for `top_items`
 - Dropped support for Ruby < 2.6
 

@@ -167,13 +167,13 @@ module Disco
 
     def similar_items(item_id, count: 5)
       check_fit
-      similar(item_id, @item_map, normalized_item_factors, count, @similar_items_index)
+      similar(item_id, :item_id, @item_map, normalized_item_factors, count, @similar_items_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
       check_fit
-      similar(user_id, @user_map, normalized_user_factors, count, @similar_users_index)
+      similar(user_id, :user_id, @user_map, normalized_user_factors, count, @similar_users_index)
     end
 
     def top_items(count: 5)
@@ -311,7 +311,7 @@ module Disco
       factors / norms.expand_dims(1)
     end
 
-    def similar(id, map, norm_factors, count, index)
+    def similar(id, key, map, norm_factors, count, index)
       i = map[id]
 
       if i && norm_factors.shape[0] > 1
@@ -334,9 +334,6 @@ module Disco
         end
 
         keys = map.keys
-
-        # TODO use user_id for similar_users in 0.3.0
-        key = :item_id
 
         result = []
         # items can have the same score
