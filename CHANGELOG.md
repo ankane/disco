@@ -1,3 +1,7 @@
+## 0.3.1 (unreleased)
+
+- Added support for JSON serialization
+
 ## 0.3.0 (2022-03-22)
 
 - Changed `item_id` to `user_id` for `similar_users`

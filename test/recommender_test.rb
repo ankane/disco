@@ -14,6 +14,9 @@ class RecommenderTest < Minitest::Test
     dump = File.binread(path)
     recommender = Marshal.load(dump)
 
+    dump = recommender.to_json
+    recommender = Disco::Recommender.load_json(dump)
+
     assert_equal [1664, 20], recommender.item_factors.shape
     assert_equal [943, 20], recommender.user_factors.shape
 
@@ -54,6 +57,9 @@ class RecommenderTest < Minitest::Test
 
     dump = File.binread(path)
     recommender = Marshal.load(dump)
+
+    dump = recommender.to_json
+    recommender = Disco::Recommender.load_json(dump)
 
     assert_equal [1664, 20], recommender.item_factors.shape
     assert_equal [943, 20], recommender.user_factors.shape
