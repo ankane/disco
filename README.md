@@ -183,19 +183,19 @@ For Rails < 6, speed up inserts by adding [activerecord-import](https://github.c
 If you’d prefer to perform recommendations on-the-fly, store the recommender
 
 ```ruby
-bin = Marshal.dump(recommender)
-File.binwrite("recommender.bin", bin)
+json = recommender.to_json
+File.write("recommender.json", json)
 ```
 
-> You can save it to a file, database, or any other storage system
+> You can save it to a file, database, or any other storage system. Also, user and item IDs should be integers or strings for this.
 
 The serialized recommender includes user activity from the training data (to avoid recommending previously rated items), so be sure to protect it.
 
 Load a recommender
 
 ```ruby
-bin = File.binread("recommender.bin")
-recommender = Marshal.load(bin)
+json = File.read("recommender.json")
+recommender = Disco::Recommender.load_json(json)
 ```
 
 Alternatively, you can store only the factors and use a library like [Neighbor](https://github.com/ankane/neighbor). See the [examples](https://github.com/ankane/neighbor/tree/master/examples).
