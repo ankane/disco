@@ -187,7 +187,7 @@ json = recommender.to_json
 File.write("recommender.json", json)
 ```
 
-The serialized recommender includes user activity from the training data (to avoid recommending previously rated items), so be sure to protect it. You can save it to a file, database, or any other storage system. Also, user and item IDs should be integers or strings for this.
+The serialized recommender includes user activity from the training data (to avoid recommending previously rated items), so be sure to protect it. You can save it to a file, database, or any other storage system, or use a tool like [Trove](https://github.com/ankane/trove). Also, user and item IDs should be integers or strings for this.
 
 Load a recommender
 
