@@ -189,6 +189,8 @@ File.binwrite("recommender.bin", bin)
 
 > You can save it to a file, database, or any other storage system
 
+The serialized recommender includes user activity from the training data (to avoid recommending previously rated items), so be sure to protect it.
+
 Load a recommender
 
 ```ruby
