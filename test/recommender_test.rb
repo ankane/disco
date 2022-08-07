@@ -29,6 +29,7 @@ class RecommenderTest < Minitest::Test
     item_ids = recs.map { |r| r[:item_id] }
     assert_includes item_ids, "Empire Strikes Back, The (1980)"
     assert_includes item_ids, "Return of the Jedi (1983)"
+    refute_includes item_ids, "Star Wars (1977)"
 
     assert_in_delta 0.9972, recs.first[:score], 0.01
 
@@ -65,9 +66,11 @@ class RecommenderTest < Minitest::Test
     assert_equal [943, 20], recommender.user_factors.shape
     assert_equal 0, recommender.global_mean
 
-    recs = recommender.item_recs("Star Wars (1977)", count: 10).map { |r| r[:item_id] }
-    assert_includes recs, "Empire Strikes Back, The (1980)"
-    assert_includes recs, "Return of the Jedi (1983)"
+    recs = recommender.item_recs("Star Wars (1977)", count: 10)
+    item_ids = recs.map { |r| r[:item_id] }
+    assert_includes item_ids, "Empire Strikes Back, The (1980)"
+    assert_includes item_ids, "Return of the Jedi (1983)"
+    refute_includes item_ids, "Star Wars (1977)"
   end
 
   def test_examples
