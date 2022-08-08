@@ -223,7 +223,7 @@ recommender.fit(data, validation_set: validation_set)
 
 ## Cold Start
 
-Collaborative filtering suffers from the [cold start problem](https://www.yuspify.com/blog/cold-start-problem-recommender-systems/). It’s unable to make good recommendations without data on a user or item, which is problematic for new users and items.
+Collaborative filtering suffers from the [cold start problem](https://en.wikipedia.org/wiki/Cold_start_(recommender_systems)). It’s unable to make good recommendations without data on a user or item, which is problematic for new users and items.
 
 ```ruby
 recommender.user_recs(new_user_id) # returns empty array
