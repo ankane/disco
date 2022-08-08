@@ -372,6 +372,15 @@ class RecommenderTest < Minitest::Test
     assert_equal "Not fit", error.message
   end
 
+  def test_fit_multiple
+    recommender = Disco::Recommender.new
+    recommender.fit([{user_id: 1, item_id: 1, rating: 5}])
+    recommender.fit([{user_id: 2, item_id: 2}])
+    assert_equal [2], recommender.user_ids
+    assert_equal [2], recommender.item_ids
+    assert_operator recommender.predict([{user_id: 2, item_id: 2}])[0], :<, 1.0
+  end
+
   def test_rover
     movielens = Disco.load_movielens
 

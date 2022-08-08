@@ -1,3 +1,7 @@
+## 0.3.2 (unreleased)
+
+- Fixed issue when `fit` is called multiple times
+
 ## 0.3.1 (2022-07-10)
 
 - Added support for JSON serialization

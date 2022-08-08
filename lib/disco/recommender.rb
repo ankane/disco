@@ -36,6 +36,8 @@ module Disco
         end
       end
 
+      @user_map = {}
+      @item_map = {}
       @rated = Hash.new { |hash, key| hash[key] = {} }
       input = []
       train_set.each do |v|
@@ -56,6 +58,9 @@ module Disco
       # TODO improve performance
       unless @implicit
         @min_rating, @max_rating = train_set.minmax_by { |o| o[:rating] }.map { |o| o[:rating] }
+      else
+        @min_rating = nil
+        @max_rating = nil
       end
 
       if @top_items
