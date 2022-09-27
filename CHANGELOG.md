@@ -1,4 +1,4 @@
-## 0.3.2 (unreleased)
+## 0.3.2 (2022-09-26)
 
 - Fixed issue when `fit` is called multiple times
 
