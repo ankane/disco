@@ -10,6 +10,7 @@ ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 ActiveRecord::Schema.define do
   create_table :users do |t|
     t.string :name
+    t.string :type
   end
 
   create_table :products do |t|
@@ -28,6 +29,9 @@ end
 class User < ActiveRecord::Base
   has_recommended :products
   has_recommended :products_v2, class_name: "Product"
+end
+
+class AdminUser < User
 end
 
 class Product < ActiveRecord::Base

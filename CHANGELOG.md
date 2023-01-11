@@ -1,3 +1,7 @@
+## 0.4.0 (unreleased)
+
+- Fixed issue with `has_recommended` and inheritance with Active Record < 6.1
+
 ## 0.3.2 (2022-09-26)
 
 - Fixed issue when `fit` is called multiple times

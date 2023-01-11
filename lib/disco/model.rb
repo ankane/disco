@@ -2,6 +2,7 @@ module Disco
   module Model
     def has_recommended(name, class_name: nil)
       class_name ||= name.to_s.singularize.camelize
+      subject_type = model_name.name
 
       class_eval do
         unless reflect_on_association(:recommendations)
@@ -12,7 +13,7 @@ module Disco
 
         define_method("update_recommended_#{name}") do |items|
           now = Time.now
-          items = items.map { |item| {subject_type: model_name.name, subject_id: id, item_type: class_name, item_id: item.fetch(:item_id), context: name, score: item.fetch(:score), created_at: now, updated_at: now} }
+          items = items.map { |item| {subject_type: subject_type, subject_id: id, item_type: class_name, item_id: item.fetch(:item_id), context: name, score: item.fetch(:score), created_at: now, updated_at: now} }
 
           self.class.transaction do
             recommendations.where(context: name).delete_all
