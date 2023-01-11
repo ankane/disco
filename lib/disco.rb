@@ -3,13 +3,13 @@ require "libmf"
 require "numo/narray"
 
 # modules
-require "disco/data"
-require "disco/metrics"
-require "disco/recommender"
-require "disco/version"
+require_relative "disco/data"
+require_relative "disco/metrics"
+require_relative "disco/recommender"
+require_relative "disco/version"
 
 # integrations
-require "disco/engine" if defined?(Rails)
+require_relative "disco/engine" if defined?(Rails)
 
 module Disco
   class Error < StandardError; end
@@ -19,7 +19,7 @@ end
 
 if defined?(ActiveSupport.on_load)
   ActiveSupport.on_load(:active_record) do
-    require "disco/model"
+    require_relative "disco/model"
     extend Disco::Model
   end
 end
