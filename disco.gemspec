@@ -13,8 +13,8 @@ Gem::Specification.new do |spec|
   spec.files         = Dir["*.{md,txt}", "{app,lib}/**/*"]
   spec.require_path  = "lib"
 
-  spec.required_ruby_version = ">= 2.6"
+  spec.required_ruby_version = ">= 2.7"
 
-  spec.add_dependency "libmf", ">= 0.2.0"
+  spec.add_dependency "libmf", ">= 0.2"
   spec.add_dependency "numo-narray"
 end
