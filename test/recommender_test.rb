@@ -13,8 +13,10 @@ class RecommenderTest < Minitest::Test
       File.binwrite(path, dump)
     end
 
-    dump = File.binread(path)
-    recommender = Marshal.load(dump)
+    assert_deprecated do
+      dump = File.binread(path)
+      recommender = Marshal.load(dump)
+    end
 
     dump = recommender.to_json
     recommender = Disco::Recommender.load_json(dump)
@@ -60,8 +62,10 @@ class RecommenderTest < Minitest::Test
       File.binwrite(path, dump)
     end
 
-    dump = File.binread(path)
-    recommender = Marshal.load(dump)
+    assert_deprecated do
+      dump = File.binread(path)
+      recommender = Marshal.load(dump)
+    end
 
     dump = recommender.to_json
     recommender = Disco::Recommender.load_json(dump)
