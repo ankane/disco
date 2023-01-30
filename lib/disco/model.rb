@@ -1,6 +1,10 @@
 module Disco
   module Model
     def has_recommended(name, class_name: nil)
+      if ActiveRecord::VERSION::MAJOR < 6
+        raise Disco::Error, "Requires Active Record 6+"
+      end
+
       class_name ||= name.to_s.singularize.camelize
       subject_type = model_name.name
 
@@ -19,15 +23,7 @@ module Disco
             recommendations.where(context: name).delete_all
 
             if items.any?
-              if recommendations.respond_to?(:insert_all!)
-                # Rails 6
-                recommendations.insert_all!(items)
-              elsif recommendations.respond_to?(:bulk_import!)
-                # activerecord-import
-                recommendations.bulk_import!(items, validate: false)
-              else
-                recommendations.create!([items])
-              end
+              recommendations.insert_all!(items)
             end
           end
         end

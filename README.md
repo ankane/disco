@@ -176,8 +176,6 @@ user.update_recommended_products_v2(recs)
 user.recommended_products_v2
 ```
 
-For Rails < 6, speed up inserts by adding [activerecord-import](https://github.com/zdennis/activerecord-import) to your app.
-
 ## Storing Recommenders
 
 If you’d prefer to perform recommendations on-the-fly, store the recommender
