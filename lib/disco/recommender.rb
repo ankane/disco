@@ -430,6 +430,8 @@ module Disco
     end
 
     def marshal_dump
+      warn "[disco] Marshal serialization is deprecated - use JSON instead"
+
       obj = {
         implicit: @implicit,
         user_map: @user_map,

@@ -1,6 +1,7 @@
 ## 0.4.0 (unreleased)
 
 - Fixed issue with `has_recommended` and inheritance with Rails < 6.1
+- Deprecated marshal serialization
 - Dropped support for Ruby < 2.7 and Rails < 6
 
 ## 0.3.2 (2022-09-26)

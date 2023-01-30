@@ -8,8 +8,10 @@ class RecommenderTest < Minitest::Test
 
     path = "#{Dir.mktmpdir}/recommender.bin"
 
-    dump = Marshal.dump(recommender)
-    File.binwrite(path, dump)
+    assert_deprecated do
+      dump = Marshal.dump(recommender)
+      File.binwrite(path, dump)
+    end
 
     dump = File.binread(path)
     recommender = Marshal.load(dump)
@@ -53,8 +55,10 @@ class RecommenderTest < Minitest::Test
 
     path = "#{Dir.mktmpdir}/recommender.bin"
 
-    dump = Marshal.dump(recommender)
-    File.binwrite(path, dump)
+    assert_deprecated do
+      dump = Marshal.dump(recommender)
+      File.binwrite(path, dump)
+    end
 
     dump = File.binread(path)
     recommender = Marshal.load(dump)
@@ -131,7 +135,13 @@ class RecommenderTest < Minitest::Test
     top_items = recommender.top_items
     assert_equal top_items, recommender.user_recs("unknown")
 
-    recommender = Marshal.load(Marshal.dump(recommender))
+    assert_deprecated do
+      recommender = Marshal.load(Marshal.dump(recommender))
+    end
+    assert_equal top_items, recommender.top_items
+    assert_equal top_items, recommender.user_recs("unknown")
+
+    recommender = Disco::Recommender.load_json(recommender.to_json)
     assert_equal top_items, recommender.top_items
     assert_equal top_items, recommender.user_recs("unknown")
   end
@@ -144,7 +154,13 @@ class RecommenderTest < Minitest::Test
     top_items = recommender.top_items
     assert_equal top_items, recommender.user_recs("unknown")
 
-    recommender = Marshal.load(Marshal.dump(recommender))
+    assert_deprecated do
+      recommender = Marshal.load(Marshal.dump(recommender))
+    end
+    assert_equal top_items, recommender.top_items
+    assert_equal top_items, recommender.user_recs("unknown")
+
+    recommender = Disco::Recommender.load_json(recommender.to_json)
     assert_equal top_items, recommender.top_items
     assert_equal top_items, recommender.user_recs("unknown")
   end
@@ -413,5 +429,13 @@ class RecommenderTest < Minitest::Test
 
     # original data frame not modified
     assert_equal ["user_id", "item_id", "rating"], data.vectors.to_a
+  end
+
+  private
+
+  def assert_deprecated
+    assert_output nil, /is deprecated/ do
+      yield
+    end
   end
 end
