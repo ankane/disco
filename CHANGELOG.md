@@ -1,4 +1,4 @@
-## 0.4.0 (unreleased)
+## 0.4.0 (2023-01-30)
 
 - Fixed issue with `has_recommended` and inheritance with Rails < 6.1
 - Deprecated marshal serialization
