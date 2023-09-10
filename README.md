@@ -329,28 +329,6 @@ Thanks to:
 - [Implicit](https://github.com/benfred/implicit/) for serving as an initial reference for user and item similarity
 - [@dasch](https://github.com/dasch) for the gem name
 
-## Upgrading
-
-### 0.2.7
-
-There’s now a warning when passing `:value` with implicit feedback, as this has no effect on recommendations and can be removed. Earlier versions of the library incorrectly stated this was used.
-
-```ruby
-recommender.fit([
-  {user_id: 1, item_id: 1, value: 1},
-  {user_id: 2, item_id: 1, value: 3}
-])
-```
-
-to:
-
-```ruby
-recommender.fit([
-  {user_id: 1, item_id: 1},
-  {user_id: 2, item_id: 1}
-])
-```
-
 ## History
 
 View the [changelog](https://github.com/ankane/disco/blob/master/CHANGELOG.md)
