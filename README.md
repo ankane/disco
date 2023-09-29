@@ -229,8 +229,8 @@ recommender.user_recs(new_user_id) # returns empty array
 
 There are a number of ways to deal with this, but here are some common ones:
 
-- For user-based recommendations, show new users the most popular items.
-- For item-based recommendations, make content-based recommendations with a gem like [tf-idf-similarity](https://github.com/jpmckinney/tf-idf-similarity).
+- For user-based recommendations, show new users the most popular items
+- For item-based recommendations, make content-based recommendations with a gem like [tf-idf-similarity](https://github.com/jpmckinney/tf-idf-similarity)
 
 Get top items with:
 
