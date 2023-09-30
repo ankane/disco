@@ -9,7 +9,7 @@ module Disco
         file_hash: "06416e597f82b7342361e41163890c81036900f418ad91315590814211dca490")
 
       # convert u.item to utf-8
-      movies_str = File.read(item_path).encode("UTF-8", "binary", invalid: :replace, undef: :replace, replace: "")
+      movies_str = File.read(item_path).encode("UTF-8", "ISO-8859-1")
 
       movies = {}
       CSV.parse(movies_str, col_sep: "|") do |row|
