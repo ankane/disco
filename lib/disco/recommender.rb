@@ -387,7 +387,7 @@ module Disco
 
           result << {key => keys[id], score: predictions[j]}
         end
-        result
+        count ? result.first(count) : result
       else
         []
       end
