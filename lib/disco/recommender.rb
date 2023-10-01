@@ -386,8 +386,9 @@ module Disco
           next if id == i
 
           result << {key => keys[id], score: predictions[j]}
+          break if result.size == count
         end
-        count ? result.first(count) : result
+        result
       else
         []
       end
