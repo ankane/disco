@@ -1,4 +1,4 @@
-## 0.4.1 (unreleased)
+## 0.4.1 (2024-05-23)
 
 - Reduced memory for `item_recs` and `similar_users`
 
