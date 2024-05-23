@@ -371,7 +371,7 @@ module Disco
             predictions = result.map { |v| 1 - v[:distance] }
           end
         else
-          predictions = factors.inner(factors[i, true]) / (norms[i] * norms)
+          predictions = factors.inner(factors[i, true]) / (norms * norms[i])
           indexes = predictions.sort_index.reverse
           indexes = indexes[0...[count + 1, indexes.size].min] if count
           predictions = predictions[indexes]
