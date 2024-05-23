@@ -1,3 +1,7 @@
+## 0.4.1 (unreleased)
+
+- Reduced memory for `item_recs` and `similar_users`
+
 ## 0.4.0 (2023-01-30)
 
 - Fixed issue with `has_recommended` and inheritance with Rails < 6.1

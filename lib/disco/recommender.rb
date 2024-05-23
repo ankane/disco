@@ -99,8 +99,8 @@ module Disco
       @user_factors = model.p_factors(format: :numo)
       @item_factors = model.q_factors(format: :numo)
 
-      @normalized_user_factors = nil
-      @normalized_item_factors = nil
+      @user_norms = nil
+      @item_norms = nil
 
       @user_recs_index = nil
       @similar_users_index = nil
@@ -172,13 +172,13 @@ module Disco
 
     def similar_items(item_id, count: 5)
       check_fit
-      similar(item_id, :item_id, @item_map, normalized_item_factors, count, @similar_items_index)
+      similar(item_id, :item_id, @item_map, @item_factors, item_norms, count, @similar_items_index)
     end
     alias_method :item_recs, :similar_items
 
     def similar_users(user_id, count: 5)
       check_fit
-      similar(user_id, :user_id, @user_map, normalized_user_factors, count, @similar_users_index)
+      similar(user_id, :user_id, @user_map, @user_factors, user_norms, count, @similar_users_index)
     end
 
     def top_items(count: 5)
@@ -247,13 +247,13 @@ module Disco
 
     def optimize_similar_items(library: nil)
       check_fit
-      @similar_items_index = create_index(normalized_item_factors, library: library)
+      @similar_items_index = create_index(@item_factors / item_norms.expand_dims(1), library: library)
     end
     alias_method :optimize_item_recs, :optimize_similar_items
 
     def optimize_similar_users(library: nil)
       check_fit
-      @similar_users_index = create_index(normalized_user_factors, library: library)
+      @similar_users_index = create_index(@user_factors / user_norms.expand_dims(1), library: library)
     end
 
     def inspect
@@ -341,36 +341,37 @@ module Disco
       end
     end
 
-    def normalized_user_factors
-      @normalized_user_factors ||= normalize(@user_factors)
+    def user_norms
+      @user_norms ||= norms(@user_factors)
     end
 
-    def normalized_item_factors
-      @normalized_item_factors ||= normalize(@item_factors)
+    def item_norms
+      @item_norms ||= norms(@item_factors)
     end
 
-    def normalize(factors)
+    def norms(factors)
       norms = Numo::SFloat::Math.sqrt((factors * factors).sum(axis: 1))
       norms[norms.eq(0)] = 1e-10 # no zeros
-      factors / norms.expand_dims(1)
+      norms
     end
 
-    def similar(id, key, map, norm_factors, count, index)
+    def similar(id, key, map, factors, norms, count, index)
       i = map[id]
 
-      if i && norm_factors.shape[0] > 1
+      if i && factors.shape[0] > 1
         if index && count
+          norm_factors = factors[i, true] / norms[i]
           if defined?(Faiss) && index.is_a?(Faiss::Index)
-            predictions, ids = index.search(norm_factors[i, true].expand_dims(0), count + 1).map { |v| v.to_a[0] }
+            predictions, ids = index.search(norm_factors.expand_dims(0), count + 1).map { |v| v.to_a[0] }
           else
-            result = index.search(norm_factors[i, true], size: count + 1)
+            result = index.search(norm_factors, size: count + 1)
             # ids from batch_insert start at 1 instead of 0
             ids = result.map { |v| v[:id] - 1 }
             # convert cosine distance to cosine similarity
             predictions = result.map { |v| 1 - v[:distance] }
           end
         else
-          predictions = norm_factors.inner(norm_factors[i, true])
+          predictions = factors.inner(factors[i, true]) / (norms[i] * norms)
           indexes = predictions.sort_index.reverse
           indexes = indexes[0...[count + 1, indexes.size].min] if count
           predictions = predictions[indexes]
