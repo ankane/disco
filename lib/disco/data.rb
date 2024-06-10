@@ -8,7 +8,6 @@ module Disco
 
       movies = {}
       File.foreach(item_path) do |line|
-        # convert u.item to utf-8
         row = line.encode("UTF-8", "ISO-8859-1").split("|")
         movies[row[0]] = row[1]
       end
