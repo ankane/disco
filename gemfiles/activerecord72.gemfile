@@ -11,4 +11,3 @@ gem "matrix" # for daru
 gem "rover-df"
 gem "ngt", ">= 0.3.0"
 gem "faiss"
-gem "csv"

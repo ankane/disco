@@ -1,23 +1,21 @@
 module Disco
   module Data
     def load_movielens
-      require "csv"
-
       item_path = download_file("ml-100k/u.item", "https://files.grouplens.org/datasets/movielens/ml-100k/u.item",
         file_hash: "553841ebc7de3a0fd0d6b62a204ea30c1e651aacfb2814c7a6584ac52f2c5701")
       data_path = download_file("ml-100k/u.data", "https://files.grouplens.org/datasets/movielens/ml-100k/u.data",
         file_hash: "06416e597f82b7342361e41163890c81036900f418ad91315590814211dca490")
 
-      # convert u.item to utf-8
-      movies_str = File.read(item_path).encode("UTF-8", "ISO-8859-1")
-
       movies = {}
-      CSV.parse(movies_str, col_sep: "|") do |row|
+      File.foreach(item_path) do |line|
+        # convert u.item to utf-8
+        row = line.encode("UTF-8", "ISO-8859-1").split("|")
         movies[row[0]] = row[1]
       end
 
       data = []
-      CSV.foreach(data_path, col_sep: "\t") do |row|
+      File.foreach(data_path) do |line|
+        row = line.split("\t")
         data << {
           user_id: row[0].to_i,
           item_id: movies[row[1]],

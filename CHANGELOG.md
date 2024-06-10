@@ -1,3 +1,7 @@
+## 0.4.2 (unreleased)
+
+- Removed dependency on `csv` gem for `load_movielens`
+
 ## 0.4.1 (2024-05-23)
 
 - Reduced memory for `item_recs` and `similar_users`
