@@ -375,7 +375,7 @@ class RecommenderTest < Minitest::Test
 
     train_set = [
       {user_id: 1, item_id: 2, rating: 1},
-      {user_id: 1, item_id: 2, rating: 2},
+      {user_id: 1, item_id: 2, rating: 2}
     ]
     recommender = Disco::Recommender.new
     error = assert_raises ArgumentError do
