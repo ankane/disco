@@ -64,8 +64,8 @@ module Disco
       end
 
       if @top_items
-        @item_count = [0] * @item_map.size
-        @item_sum = [0.0] * @item_map.size
+        @item_count = Array.new(@item_map.size, 0)
+        @item_sum = Array.new(@item_map.size, 0.0)
         train_set.each do |v|
           i = @item_map[v[:item_id]]
           @item_count[i] += 1
