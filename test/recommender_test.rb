@@ -23,9 +23,7 @@ class RecommenderTest < Minitest::Test
 
     assert_equal [1664, 20], recommender.item_factors.shape
     assert_equal [943, 20], recommender.user_factors.shape
-
-    expected = data.map { |v| v[:rating] }.sum / data.size.to_f
-    assert_in_delta expected, recommender.global_mean
+    assert_in_delta 3.52986, recommender.global_mean
 
     recs = recommender.item_recs("Star Wars (1977)")
     assert_equal 5, recs.size
