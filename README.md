@@ -194,7 +194,7 @@ json = File.read("recommender.json")
 recommender = Disco::Recommender.load_json(json)
 ```
 
-Alternatively, you can store only the factors and use a library like [Neighbor](https://github.com/ankane/neighbor). See the [examples](https://github.com/ankane/neighbor/tree/master/examples).
+Alternatively, you can store only the factors and use a library like [Neighbor](https://github.com/ankane/neighbor). See the [examples](https://github.com/ankane/neighbor/tree/master/examples/disco).
 
 ## Algorithms
 
