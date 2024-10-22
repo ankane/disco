@@ -1,3 +1,7 @@
+## 0.5.0 (unreleased)
+
+- Dropped support for Ruby < 3.1 and Rails < 7
+
 ## 0.4.2 (2024-06-24)
 
 - Removed dependency on `csv` gem for `load_movielens`
