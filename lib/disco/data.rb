@@ -33,9 +33,8 @@ module Disco
       require "net/http"
       require "tmpdir"
 
-      # TODO handle this better
-      raise "No HOME" unless ENV["HOME"]
-      dest = "#{ENV["HOME"]}/.disco/#{fname}"
+      cache_home = ENV["XDG_CACHE_HOME"] || "#{ENV.fetch("HOME")}/.cache"
+      dest = "#{cache_home}/disco/#{fname}"
       FileUtils.mkdir_p(File.dirname(dest))
 
       return dest if File.exist?(dest)
