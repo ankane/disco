@@ -6,18 +6,6 @@ class RecommenderTest < Minitest::Test
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
 
-    path = "#{Dir.mktmpdir}/recommender.bin"
-
-    assert_deprecated do
-      dump = Marshal.dump(recommender)
-      File.binwrite(path, dump)
-    end
-
-    assert_deprecated do
-      dump = File.binread(path)
-      recommender = Marshal.load(dump)
-    end
-
     dump = recommender.to_json
     recommender = Disco::Recommender.load_json(dump)
 
@@ -52,18 +40,6 @@ class RecommenderTest < Minitest::Test
 
     recommender = Disco::Recommender.new(factors: 20)
     recommender.fit(data)
-
-    path = "#{Dir.mktmpdir}/recommender.bin"
-
-    assert_deprecated do
-      dump = Marshal.dump(recommender)
-      File.binwrite(path, dump)
-    end
-
-    assert_deprecated do
-      dump = File.binread(path)
-      recommender = Marshal.load(dump)
-    end
 
     dump = recommender.to_json
     recommender = Disco::Recommender.load_json(dump)
@@ -137,12 +113,6 @@ class RecommenderTest < Minitest::Test
     top_items = recommender.top_items
     assert_equal top_items, recommender.user_recs("unknown")
 
-    assert_deprecated do
-      recommender = Marshal.load(Marshal.dump(recommender))
-    end
-    assert_equal top_items, recommender.top_items
-    assert_equal top_items, recommender.user_recs("unknown")
-
     recommender = Disco::Recommender.load_json(recommender.to_json)
     assert_equal top_items, recommender.top_items
     assert_equal top_items, recommender.user_recs("unknown")
@@ -154,12 +124,6 @@ class RecommenderTest < Minitest::Test
     recommender = Disco::Recommender.new(factors: 20, top_items: true)
     recommender.fit(data)
     top_items = recommender.top_items
-    assert_equal top_items, recommender.user_recs("unknown")
-
-    assert_deprecated do
-      recommender = Marshal.load(Marshal.dump(recommender))
-    end
-    assert_equal top_items, recommender.top_items
     assert_equal top_items, recommender.user_recs("unknown")
 
     recommender = Disco::Recommender.load_json(recommender.to_json)
@@ -431,13 +395,5 @@ class RecommenderTest < Minitest::Test
 
     # original data frame not modified
     assert_equal ["user_id", "item_id", "rating"], data.vectors.to_a
-  end
-
-  private
-
-  def assert_deprecated
-    assert_output nil, /is deprecated/ do
-      yield
-    end
   end
 end

@@ -431,61 +431,6 @@ module Disco
       end
     end
 
-    def marshal_dump
-      warn "[disco] Marshal serialization is deprecated - use JSON instead"
-
-      obj = {
-        implicit: @implicit,
-        user_map: @user_map,
-        item_map: @item_map,
-        rated: @rated,
-        global_mean: @global_mean,
-        user_factors: @user_factors,
-        item_factors: @item_factors,
-        factors: @factors,
-        epochs: @epochs,
-        verbose: @verbose
-      }
-
-      unless @implicit
-        obj[:min_rating] = @min_rating
-        obj[:max_rating] = @max_rating
-      end
-
-      if @top_items
-        obj[:item_count] = @item_count
-        obj[:item_sum] = @item_sum
-      end
-
-      obj
-    end
-
-    def marshal_load(obj)
-      warn "[disco] Marshal serialization is deprecated - use JSON instead"
-
-      @implicit = obj[:implicit]
-      @user_map = obj[:user_map]
-      @item_map = obj[:item_map]
-      @rated = obj[:rated]
-      @global_mean = obj[:global_mean]
-      @user_factors = obj[:user_factors]
-      @item_factors = obj[:item_factors]
-      @factors = obj[:factors]
-      @epochs = obj[:epochs]
-      @verbose = obj[:verbose]
-
-      unless @implicit
-        @min_rating = obj[:min_rating]
-        @max_rating = obj[:max_rating]
-      end
-
-      @top_items = obj.key?(:item_count)
-      if @top_items
-        @item_count = obj[:item_count]
-        @item_sum = obj[:item_sum]
-      end
-    end
-
     def json_load(obj)
       require "base64"
 
