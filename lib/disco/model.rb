@@ -1,8 +1,8 @@
 module Disco
   module Model
     def has_recommended(name, class_name: nil)
-      if ActiveRecord::VERSION::MAJOR < 6
-        raise Disco::Error, "Requires Active Record 6+"
+      if ActiveRecord::VERSION::MAJOR < 7
+        raise Disco::Error, "Requires Active Record 7+"
       end
 
       class_name ||= name.to_s.singularize.camelize
