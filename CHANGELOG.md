@@ -1,3 +1,7 @@
+## 0.5.1 (unreleased)
+
+- Removed dependency on `base64` gem for serialization
+
 ## 0.5.0 (2024-10-22)
 
 - Changed dataset directory to match XDG Base Directory Specification

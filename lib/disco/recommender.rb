@@ -261,7 +261,6 @@ module Disco
     end
 
     def to_json
-      require "base64"
       require "json"
 
       obj = {
@@ -270,8 +269,8 @@ module Disco
         item_ids: @item_map.keys,
         rated: @user_map.map { |_, u| (@rated[u] || {}).keys },
         global_mean: @global_mean,
-        user_factors: Base64.strict_encode64(@user_factors.to_binary),
-        item_factors: Base64.strict_encode64(@item_factors.to_binary),
+        user_factors: [@user_factors.to_binary].pack("m0"),
+        item_factors: [@item_factors.to_binary].pack("m0"),
         factors: @factors,
         epochs: @epochs,
         verbose: @verbose
@@ -432,16 +431,14 @@ module Disco
     end
 
     def json_load(obj)
-      require "base64"
-
       @implicit = obj["implicit"]
       @user_map = obj["user_ids"].map.with_index.to_h
       @item_map = obj["item_ids"].map.with_index.to_h
       @rated = obj["rated"].map.with_index.to_h { |r, i| [i, r.to_h { |v| [v, true] }] }
       @global_mean = obj["global_mean"].to_f
       @factors = obj["factors"].to_i
-      @user_factors = Numo::SFloat.from_binary(Base64.strict_decode64(obj["user_factors"]), [@user_map.size, @factors])
-      @item_factors = Numo::SFloat.from_binary(Base64.strict_decode64(obj["item_factors"]), [@item_map.size, @factors])
+      @user_factors = Numo::SFloat.from_binary(obj["user_factors"].unpack1("m0"), [@user_map.size, @factors])
+      @item_factors = Numo::SFloat.from_binary(obj["item_factors"].unpack1("m0"), [@item_map.size, @factors])
       @epochs = obj["epochs"].to_i
       @verbose = obj["verbose"]
 
