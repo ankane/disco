@@ -3,6 +3,7 @@ require_relative "test_helper"
 class OptimizeTest < Minitest::Test
   def setup
     skip "Not available on Windows" if windows?
+    super
   end
 
   def test_optimize_user_recs
