@@ -1,0 +1,13 @@
+source "https://rubygems.org"
+
+gemspec path: ".."
+
+gem "rake"
+gem "minitest", ">= 5"
+gem "activerecord", "~> 8.1.0.beta1"
+gem "sqlite3"
+gem "daru"
+gem "matrix" # for daru
+gem "rover-df"
+gem "ngt", ">= 0.3.0"
+gem "faiss"
