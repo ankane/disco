@@ -7,15 +7,7 @@ jobs:
       matrix:
         include:
           - ruby: 3.4
-            gemfile: gemfiles/activerecord81.gemfile
-          - ruby: 3.4
             gemfile: Gemfile
-          - ruby: 3.3
-            gemfile: gemfiles/activerecord72.gemfile
-          - ruby: 3.2
-            gemfile: gemfiles/activerecord71.gemfile
-          - ruby: 3.1
-            gemfile: gemfiles/activerecord70.gemfile
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}

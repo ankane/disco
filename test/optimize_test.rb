@@ -16,6 +16,8 @@ class OptimizeTest < Minitest::Test
     recommender.optimize_user_recs
 
     recs = recommender.user_recs(1)
+    pp original_recs
+    pp recs
     assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
     original_recs.zip(recs).each do |exp, act|
       assert_in_delta exp[:score], act[:score]
@@ -33,6 +35,8 @@ class OptimizeTest < Minitest::Test
     recommender.optimize_item_recs(library: "faiss")
 
     recs = recommender.item_recs("Star Wars (1977)")
+    pp original_recs
+    pp recs
     assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
     original_recs.zip(recs).each do |exp, act|
       assert_in_delta exp[:score], act[:score]
@@ -56,7 +60,8 @@ class OptimizeTest < Minitest::Test
     recommender.optimize_similar_users(library: "faiss")
 
     recs = recommender.similar_users(1)
-
+    pp original_recs
+    pp recs
     assert_equal original_recs.map { |v| v[:user_id] }, recs.map { |v| v[:user_id] }
     original_recs.zip(recs).each do |exp, act|
       assert_in_delta exp[:score], act[:score]
@@ -74,6 +79,8 @@ class OptimizeTest < Minitest::Test
     recommender.optimize_item_recs(library: "ngt")
 
     recs = recommender.item_recs("Star Wars (1977)")
+    pp original_recs
+    pp recs
     assert_equal original_recs.map { |v| v[:item_id] }, recs.map { |v| v[:item_id] }
     original_recs.zip(recs).each do |exp, act|
       assert_in_delta exp[:score], act[:score]
@@ -97,7 +104,8 @@ class OptimizeTest < Minitest::Test
     recommender.optimize_similar_users(library: "ngt")
 
     recs = recommender.similar_users(1, count: 10)
-
+    pp original_recs
+    pp recs
     # won't match exactly due to ANN
     matching_ids = original_recs.map { |v| v[:user_id] } & recs.map { |v| v[:user_id] }
     assert_includes 8..10, matching_ids.size
