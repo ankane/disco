@@ -150,6 +150,8 @@ module Disco
           indexes = indexes[0...[count + rated.size, indexes.size].min] if count
           predictions = predictions[indexes]
           ids = indexes
+          p predictions
+          p ids
         end
 
         predictions.inplace.clip(@min_rating, @max_rating) if @min_rating

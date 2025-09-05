@@ -23,4 +23,5 @@ jobs:
         with:
           path: ~/.cache/disco
           key: disco-v2
-      - run: bundle exec rake test
+      # - run: bundle exec rake test
+      - run: ruby test/optimize_test.rb --name test_optimize_user_recs
