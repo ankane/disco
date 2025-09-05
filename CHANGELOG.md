@@ -1,3 +1,7 @@
+## 0.5.2 (unreleased)
+
+- Fixed error with Rover 0.5+
+
 ## 0.5.1 (2024-12-29)
 
 - Removed dependency on `base64` gem for serialization

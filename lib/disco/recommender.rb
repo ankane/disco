@@ -414,11 +414,7 @@ module Disco
     def to_dataset(dataset)
       if defined?(Rover::DataFrame) && dataset.is_a?(Rover::DataFrame)
         # convert keys to symbols
-        dataset = dataset.dup
-        dataset.keys.each do |k, v|
-          dataset[k.to_sym] ||= dataset.delete(k)
-        end
-        dataset.to_a
+        dataset.each_row.map { |v| v.transform_keys(&:to_sym) }
       elsif defined?(Daru::DataFrame) && dataset.is_a?(Daru::DataFrame)
         # convert keys to symbols
         dataset = dataset.dup
