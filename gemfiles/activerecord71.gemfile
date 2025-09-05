@@ -9,5 +9,5 @@ gem "sqlite3", "< 2"
 gem "daru"
 gem "matrix" # for daru
 gem "rover-df"
-gem "ngt", ">= 0.3.0"
+gem "ngt"
 gem "faiss"
