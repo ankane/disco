@@ -386,10 +386,10 @@ module Disco
       end
     end
 
-    def top_k(predictions, count)
-      indexes = predictions.sort_index.reverse
+    def top_k(values, count)
+      indexes = values.sort_index.reverse
       indexes = indexes[0...[count, indexes.size].min] if count
-      [predictions[indexes], indexes]
+      [values[indexes], indexes]
     end
 
     def check_ratings(ratings)
