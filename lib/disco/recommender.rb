@@ -138,17 +138,13 @@ module Disco
           return [] if ids.size == 0
 
           predictions = @item_factors[ids, true].inner(@user_factors[u, true])
-          indexes = predictions.sort_index.reverse
-          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
-          predictions = predictions[indexes]
+          predictions, indexes = top_k(predictions, count ? count + rated.size : nil)
           ids = ids[indexes]
         elsif @user_recs_index && count
           predictions, ids = @user_recs_index.search(@user_factors[u, true].expand_dims(0), count + rated.size).map { |v| v[0, true] }
         else
           predictions = @item_factors.inner(@user_factors[u, true])
-          indexes = predictions.sort_index.reverse # reverse just creates view
-          indexes = indexes[0...[count + rated.size, indexes.size].min] if count
-          predictions = predictions[indexes]
+          predictions, indexes = top_k(predictions, count ? count + rated.size : nil)
           ids = indexes
         end
 
@@ -204,9 +200,7 @@ module Disco
         scores = scores * range + min_rating
       end
 
-      indexes = scores.sort_index.reverse
-      indexes = indexes[0...[count, indexes.size].min] if count
-      scores = scores[indexes]
+      scores, indexes = top_k(scores, count)
 
       keys = @item_map.keys
       indexes.size.times.map do |i|
@@ -371,9 +365,7 @@ module Disco
           end
         else
           predictions = factors.inner(factors[i, true]) / (norms * norms[i])
-          indexes = predictions.sort_index.reverse
-          indexes = indexes[0...[count + 1, indexes.size].min] if count
-          predictions = predictions[indexes]
+          predictions, indexes = top_k(predictions, count ? count + 1 : nil)
           ids = indexes
         end
 
@@ -392,6 +384,12 @@ module Disco
       else
         []
       end
+    end
+
+    def top_k(predictions, count)
+      indexes = predictions.sort_index.reverse
+      indexes = indexes[0...[count, indexes.size].min] if count
+      [predictions[indexes], indexes]
     end
 
     def check_ratings(ratings)
