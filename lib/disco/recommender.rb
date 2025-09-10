@@ -387,8 +387,9 @@ module Disco
     end
 
     def top_k(values, count)
-      indexes = values.sort_index.reverse
-      indexes = indexes[0...[count, indexes.size].min] if count
+      indexes = values.to_a.each_with_index.sort_by { |v, _| -v }
+      indexes = indexes.first(count) if count
+      indexes = indexes.map(&:last)
       [values[indexes], indexes]
     end
 
