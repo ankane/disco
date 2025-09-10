@@ -192,7 +192,7 @@ module Disco
         # wilson score with continuity correction
         # https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval_with_continuity_correction
         z = 1.96 # 95% confidence
-        range = @max_rating - @min_rating
+        range = @max_rating - min_rating
         n = Numo::DFloat.cast(@item_count)
         phat = (Numo::DFloat.cast(@item_sum) - (min_rating * n)) / range / n
         phat = (phat - (1 / (2 * n))).clip(0, nil) # continuity correction
