@@ -387,9 +387,24 @@ module Disco
     end
 
     def top_k(values, count)
-      indexes = values.sort_index.reverse
-      indexes = indexes[0...[count, indexes.size].min] if count
+      if self.class.sort_index?
+        indexes = values.sort_index.reverse
+        indexes = indexes[0...[count, indexes.size].min] if count
+      else
+        indexes = values.to_a.each_with_index.sort_by { |v, _| -v }
+        indexes = indexes.first(count) if count
+        indexes = indexes.map(&:last)
+      end
       [values[indexes], indexes]
+    end
+
+    # https://github.com/ruby-numo/numo-narray/issues/243
+    def self.sort_index?
+      unless defined?(@sort_index)
+        arr = Numo::SFloat.new(100).rand
+        @sort_index = arr[arr.sort_index].to_a == arr.to_a.sort
+      end
+      @sort_index
     end
 
     def check_ratings(ratings)
