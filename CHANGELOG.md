@@ -1,4 +1,4 @@
-## 0.5.2 (unreleased)
+## 0.5.2 (2025-09-12)
 
 - Fixed recommendations when numo-narray compiled with GCC 13+
 - Fixed error with Rover 0.5+
