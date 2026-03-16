@@ -2,6 +2,9 @@
 require "libmf"
 require "numo/narray"
 
+# stdlib
+require "set"
+
 # modules
 require_relative "disco/data"
 require_relative "disco/metrics"

@@ -38,18 +38,17 @@ module Disco
 
       @user_map = {}
       @item_map = {}
-      @rated = Hash.new { |hash, key| hash[key] = {} }
+      @rated = []
       input = []
       train_set.each do |v|
         # update maps and build matrix in single pass
         u = (@user_map[v[:user_id]] ||= @user_map.size)
         i = (@item_map[v[:item_id]] ||= @item_map.size)
-        @rated[u][i] = true
+        (@rated[u] ||= Set.new) << i
 
         # explicit will always have a value due to check_ratings
         input << [u, i, @implicit ? 1 : v[:rating]]
       end
-      @rated.default = nil
 
       # much more efficient than checking every value in another pass
       raise ArgumentError, "Missing user_id" if @user_map.key?(nil)
@@ -153,7 +152,7 @@ module Disco
         keys = @item_map.keys
         result = []
         ids.each_with_index do |item_id, i|
-          next if rated[item_id]
+          next if rated.include?(item_id)
 
           result << {item_id: keys[item_id], score: predictions[i]}
           break if result.size == count
@@ -261,7 +260,7 @@ module Disco
         implicit: @implicit,
         user_ids: @user_map.keys,
         item_ids: @item_map.keys,
-        rated: @user_map.map { |_, u| (@rated[u] || {}).keys },
+        rated: @rated.map { |v| v.to_a.sort },
         global_mean: @global_mean,
         user_factors: [@user_factors.to_binary].pack("m0"),
         item_factors: [@item_factors.to_binary].pack("m0"),
@@ -443,7 +442,7 @@ module Disco
       @implicit = obj["implicit"]
       @user_map = obj["user_ids"].map.with_index.to_h
       @item_map = obj["item_ids"].map.with_index.to_h
-      @rated = obj["rated"].map.with_index.to_h { |r, i| [i, r.to_h { |v| [v, true] }] }
+      @rated = obj["rated"].map { |r| Set.new(r) }
       @global_mean = obj["global_mean"].to_f
       @factors = obj["factors"].to_i
       @user_factors = Numo::SFloat.from_binary(obj["user_factors"].unpack1("m0"), [@user_map.size, @factors])
