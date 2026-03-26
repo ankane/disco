@@ -1,5 +1,6 @@
 ## 0.6.0 (unreleased)
 
+- Switched to `numo-narray-alt`
 - Dropped support for Ruby < 3.3 and Rails < 7.2
 
 ## 0.5.2 (2025-09-12)

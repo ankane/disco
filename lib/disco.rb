@@ -1,6 +1,6 @@
 # dependencies
 require "libmf"
-require "numo/narray"
+require "numo/narray/alt"
 
 # stdlib
 require "set"
