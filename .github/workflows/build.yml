@@ -16,7 +16,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       # for faiss
       - run: sudo apt-get update && sudo apt-get install libblas-dev liblapack-dev
       - uses: ruby/setup-ruby@v1
