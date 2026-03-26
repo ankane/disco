@@ -379,21 +379,4 @@ class RecommenderTest < Minitest::Test
     # original data frame not modified
     assert_equal ["user_id", "item_id", "rating"], data.keys
   end
-
-  def test_daru
-    movielens = Disco.load_movielens
-
-    data =
-      Daru::DataFrame.new({
-        "user_id" => movielens.map { |v| v[:user_id] },
-        "item_id" => movielens.map { |v| v[:item_id] },
-        "rating" => movielens.map { |v| v[:rating] }
-      })
-
-    recommender = Disco::Recommender.new
-    recommender.fit(data)
-
-    # original data frame not modified
-    assert_equal ["user_id", "item_id", "rating"], data.vectors.to_a
-  end
 end

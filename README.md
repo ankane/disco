@@ -256,12 +256,6 @@ Or a Rover data frame
 Rover.read_csv("ratings.csv")
 ```
 
-Or a Daru data frame
-
-```ruby
-Daru::DataFrame.from_csv("ratings.csv")
-```
-
 ## Performance
 
 If you have a large number of users or items, you can use an approximate nearest neighbors library like [Faiss](https://github.com/ankane/faiss) to improve the performance of certain methods.
