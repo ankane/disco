@@ -1,3 +1,7 @@
+## 0.6.0 (unreleased)
+
+- Dropped support for Ruby < 3.3 and Rails < 7.2
+
 ## 0.5.2 (2025-09-12)
 
 - Fixed recommendations when numo-narray compiled with GCC 13+
