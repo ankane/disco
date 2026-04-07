@@ -200,6 +200,16 @@ class RecommenderTest < Minitest::Test
     recommender.fit(train_set, validation_set: validation_set)
   end
 
+  def test_validation_set_empty
+    data = [
+      {user_id: 1, item_id: "A"},
+      {user_id: 1, item_id: "B"},
+      {user_id: 2, item_id: "B"}
+    ]
+    recommender = Disco::Recommender.new
+    recommender.fit(data, validation_set: [])
+  end
+
   def test_user_recs_item_ids
     recommender = Disco::Recommender.new
     recommender.fit([

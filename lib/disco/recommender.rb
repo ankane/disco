@@ -73,7 +73,7 @@ module Disco
       end
 
       eval_set = nil
-      if validation_set
+      if validation_set&.any?
         eval_set = []
         # TODO fix implicit
         unseen_u = @implicit ? 0 : @user_map.size
