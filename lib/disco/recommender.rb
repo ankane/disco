@@ -75,13 +75,12 @@ module Disco
       eval_set = nil
       if validation_set
         eval_set = []
+        # TODO fix implicit
+        unseen_u = @implicit ? 0 : @user_map.size
+        unseen_i = @implicit ? 0 : @item_map.size
         validation_set.each do |v|
-          u = @user_map[v[:user_id]]
-          i = @item_map[v[:item_id]]
-
-          # set to non-existent item
-          u ||= -1
-          i ||= -1
+          u = @user_map[v[:user_id]] || unseen_u
+          i = @item_map[v[:item_id]] || unseen_i
 
           eval_set << [u, i, @implicit ? 1 : v[:rating]]
         end
