@@ -39,12 +39,16 @@ module Disco
 
       puts "Downloading data from #{origin}"
       URI.parse(origin).open(redirect: false) do |download|
-        # download should always be tempfile
-        download.flush
+        digest =
+          if download.respond_to?(:path)
+            download.flush
+            Digest::SHA256.file(download.path).hexdigest
+          else
+            Digest::SHA256.hexdigest(download.string)
+          end
 
-        digest = Digest::SHA256.file(download.path)
-        if digest.hexdigest != file_hash
-          raise Error, "Bad hash: #{digest.hexdigest}"
+        if digest != file_hash
+          raise Error, "Bad hash: #{digest}"
         end
         puts "Hash verified: #{file_hash}"
 
