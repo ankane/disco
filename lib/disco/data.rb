@@ -45,7 +45,7 @@ module Disco
         puts "Downloading data from #{origin}"
         IO.copy_stream(URI.parse(origin).open(redirect: false), temp_path)
 
-        digest = Digest::SHA2.file(temp_path)
+        digest = Digest::SHA256.file(temp_path)
         if digest.hexdigest != file_hash
           raise Error, "Bad hash: #{digest.hexdigest}"
         end
