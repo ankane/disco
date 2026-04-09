@@ -30,7 +30,7 @@ module Disco
     def download_file(fname, origin, file_hash:)
       require "digest"
       require "fileutils"
-      require "net/http"
+      require "open-uri"
       require "tmpdir"
 
       cache_home = ENV["XDG_CACHE_HOME"] || "#{ENV.fetch("HOME")}/.cache"
@@ -39,37 +39,20 @@ module Disco
 
       return dest if File.exist?(dest)
 
-      temp_path = "#{Dir.tmpdir}/disco-#{Time.now.to_f}" # TODO better name
-
-      digest = Digest::SHA2.new
-
-      uri = URI(origin)
-
-      # Net::HTTP automatically adds Accept-Encoding for compression
-      # of response bodies and automatically decompresses gzip
-      # and deflateresponses unless a Range header was sent.
-      # https://ruby-doc.org/stdlib-2.6.4/libdoc/net/http/rdoc/Net/HTTP.html
-      Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
-        request = Net::HTTP::Get.new(uri)
+      Dir.mktmpdir do |dir|
+        temp_path = "#{dir}/disco"
 
         puts "Downloading data from #{origin}"
-        File.open(temp_path, "wb") do |f|
-          http.request(request) do |response|
-            response.read_body do |chunk|
-              f.write(chunk)
-              digest.update(chunk)
-            end
-          end
+        IO.copy_stream(URI.parse(origin).open(redirect: false), temp_path)
+
+        digest = Digest::SHA2.file(temp_path)
+        if digest.hexdigest != file_hash
+          raise Error, "Bad hash: #{digest.hexdigest}"
         end
+        puts "Hash verified: #{file_hash}"
+
+        FileUtils.mv(temp_path, dest)
       end
-
-      if digest.hexdigest != file_hash
-        raise Error, "Bad hash: #{digest.hexdigest}"
-      end
-
-      puts "Hash verified: #{file_hash}"
-
-      FileUtils.mv(temp_path, dest)
 
       dest
     end
