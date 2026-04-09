@@ -131,7 +131,7 @@ module Disco
         rated = item_ids ? {} : @rated[u]
 
         if item_ids
-          ids = Numo::NArray.cast(item_ids.map { |i| @item_map[i] }.compact)
+          ids = Numo::NArray.cast(item_ids.filter_map { |i| @item_map[i] })
           return [] if ids.size == 0
 
           predictions = @item_factors[ids, true].inner(@user_factors[u, true])
