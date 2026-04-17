@@ -195,9 +195,34 @@ class RecommenderTest < Minitest::Test
     data = Disco.load_movielens
     data.each { |v| v.delete(:rating) }
     train_set = data.first(80000)
-    validation_set = data.last(20000)
+    item_ids = Set.new(train_set.map { |v| v[:item_id ] })
+    validation_set = data.last(20000).select { |v| item_ids.include?(v[:item_id]) }
     recommender = Disco::Recommender.new(factors: 20, verbose: false)
     recommender.fit(train_set, validation_set: validation_set)
+  end
+
+  def test_validation_set_implicit_new_user
+    data = [
+      {user_id: 1, item_id: 1},
+      {user_id: 2, item_id: 1}
+    ]
+    recommender = Disco::Recommender.new(verbose: false)
+    error = assert_raises(ArgumentError) do
+      recommender.fit(data, validation_set: [{user_id: 3, item_id: 1}])
+    end
+    assert_equal "Validation set cannot have new users for implicit feedback", error.message
+  end
+
+  def test_validation_set_implicit_new_item
+    data = [
+      {user_id: 1, item_id: 1},
+      {user_id: 2, item_id: 1}
+    ]
+    recommender = Disco::Recommender.new(verbose: false)
+    error = assert_raises(ArgumentError) do
+      recommender.fit(data, validation_set: [{user_id: 1, item_id: 2}])
+    end
+    assert_equal "Validation set cannot have new items for implicit feedback", error.message
   end
 
   def test_validation_set_empty

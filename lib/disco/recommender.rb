@@ -74,13 +74,24 @@ module Disco
 
       eval_set = nil
       if validation_set&.any?
-        # TODO fix implicit
-        unseen_u = @implicit ? 0 : @user_map.size
-        unseen_i = @implicit ? 0 : @item_map.size
         eval_set = []
         validation_set.each do |v|
-          u = @user_map[v[:user_id]] || unseen_u
-          i = @item_map[v[:item_id]] || unseen_i
+          u = @user_map[v[:user_id]]
+          i = @item_map[v[:item_id]]
+
+          if @implicit
+            if u.nil?
+              raise ArgumentError, "Validation set cannot have new users for implicit feedback"
+            end
+
+            if i.nil?
+              raise ArgumentError, "Validation set cannot have new items for implicit feedback"
+            end
+          else
+            u ||= @user_map.size
+            i ||= @item_map.size
+          end
+
           eval_set << [u, i, @implicit ? 1 : v[:rating]]
         end
       end
