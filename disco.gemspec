@@ -15,6 +15,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 3.3"
 
-  spec.add_dependency "libmf", ">= 0.4"
+  spec.add_dependency "libmf", ">= 0.5"
   spec.add_dependency "numo-narray-alt", ">= 0.10"
 end
