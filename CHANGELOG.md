@@ -1,6 +1,7 @@
 ## 0.6.0 (unreleased)
 
 - Switched to `numo-narray-alt`
+- Fixed handling of new users and items in validation set
 - Dropped support for Daru
 - Dropped support for Ruby < 3.3 and Rails < 7.2
 
