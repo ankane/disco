@@ -8,6 +8,7 @@ jobs:
         include:
           - ruby: "4.0"
             gemfile: Gemfile
+            valgrind: true
           - ruby: 3.4
             gemfile: gemfiles/activerecord80.gemfile
           - ruby: 3.3
@@ -28,3 +29,8 @@ jobs:
           path: ~/.cache/disco
           key: disco-v2
       - run: bundle exec rake test
+
+      - if: ${{ matrix.valgrind }}
+        run: |
+          sudo apt-get update && sudo apt-get install valgrind
+          bundle exec rake test:valgrind
