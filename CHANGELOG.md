@@ -1,4 +1,4 @@
-## 0.6.0 (unreleased)
+## 1.0.0 (2026-04-17)
 
 - Switched to `numo-narray-alt`
 - Fixed handling of new users and items in validation set

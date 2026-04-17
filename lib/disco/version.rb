@@ -1,3 +1,3 @@
 module Disco
-  VERSION = "0.5.2"
+  VERSION = "1.0.0"
 end
