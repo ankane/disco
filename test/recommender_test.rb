@@ -206,7 +206,7 @@ class RecommenderTest < Minitest::Test
       {user_id: 1, item_id: 1},
       {user_id: 2, item_id: 1}
     ]
-    recommender = Disco::Recommender.new(verbose: false)
+    recommender = Disco::Recommender.new
     error = assert_raises(ArgumentError) do
       recommender.fit(data, validation_set: [{user_id: 3, item_id: 1}])
     end
@@ -218,7 +218,7 @@ class RecommenderTest < Minitest::Test
       {user_id: 1, item_id: 1},
       {user_id: 2, item_id: 1}
     ]
-    recommender = Disco::Recommender.new(verbose: false)
+    recommender = Disco::Recommender.new
     error = assert_raises(ArgumentError) do
       recommender.fit(data, validation_set: [{user_id: 1, item_id: 2}])
     end
